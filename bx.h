@@ -130,12 +130,6 @@
 
 // *********
 
-// TODO: Compiler specific.
-#define debug_break() __debugbreak()
-#define debug_step() int _______a##__LINE__ = 0
-
-// *********
-
 #include <float.h>
 #include <stdint.h>
 
@@ -298,6 +292,10 @@ typedef s64x b64x;
 #define var_end(list) va_end(list)
 #define var_fetch(list, type) va_arg(list, type)
 
+// Debug.
+#define debug_break() *(((int*)0)) = 0
+#define debug_step() int _______a##__LINE__ = 0
+
 // Assertions.
 #define assert(x) expr( if(!(x)) { debug_break(); } )
 #define cassert(x) typedef char concat_exp(__FILE__, __LINE__) [(x)?1:-1]
@@ -339,7 +337,14 @@ void* set32(void* dst, u32 dword, sz count);
 void* set64(void* dst, u64 qword, sz count);
 void* zero(void* dst, sz size);
 void* move(void* dst, void* src, sz size);
-sz    compress(void* dst, void* src, sz size);
-void  decompress(void* dst, void* src, sz size, sz decompressed_size);
+void* align(void* ptr, up alignment);
+void* align(void* ptr, up padding, up alignment);
+bool  compare(void* a, void* b, sz size);
+
+// Compression.
+sz    compress_lz(void* dst, void* src, sz size);
+void  decompress_lz(void* dst, void* src, sz size, sz decompressed_size);
+sz    compress_rle(void* dst, void* src, sz size);
+void  decompress_rle(void* dst, void* src, sz size, sz decompressed_size);
 
 #endif

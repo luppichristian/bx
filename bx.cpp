@@ -1,4 +1,15 @@
 
+ // Copyright 2023 Christian Luppi
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
+// and associated documentation files (the "Software"), to use the Software for learning purposes only. 
+// Any commercial use, reproduction, distribution, modification, or creation of derivative works from this Software, 
+// or any part thereof, is strictly prohibited without the explicit written permission of the copyright owner.
+// THE SOFTWARE IS PROVIDED "AS IS," WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+// IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 #if !defined(BX)
 #error Missing header!
 #endif
@@ -47,7 +58,27 @@ void* move(void* dst, void* src, sz size) {
      return dst;
 }
 
-sz compress(void* dst, void* src, sz size) {
+void* align(void* ptr, up alignment) {
+     assert(ptr && is_pow2(alignment));
+     return uint_to_ptr(align_pow2(uint_from_ptr(ptr), alignment));
+}
+
+void* align(void* ptr, up padding, up alignment) {
+     u8* forward = (u8*)ptr + padding;
+     return align(forward, alignment);
+}
+
+bool compare(void* a, void* b, sz size) {
+     for(sz i = 0; i < size; ++i) {
+          if(((u8*)a)[i] != ((u8*)b)[i]) {
+               return false;
+          }
+     }
+     
+     return true;
+}
+
+sz compress_lz(void* dst, void* src, sz size) {
      u8 literal_count = 0;
      u8 literals[U8_MAX];
      u8* in = (u8*)src;
@@ -129,25 +160,118 @@ sz compress(void* dst, void* src, sz size) {
      return out_size;
 }
 
-void decompress(void* dst, void* src, sz size, sz decompressed_size) {
+void decompress_lz(void* dst, void* src, sz size, sz decompressed_size) {
      if(decompressed_size != size) {
           u8* out = (u8*)dst;
           u8* out_max = out + decompressed_size;
           u8* in = (u8*)src;
           u8* in_max = in + size;
           while(in < in_max) {
-               u8 Count = *in++;
-               u8 Distance = *in++;
-               if(Distance) {
-                    u8 *Source = (out - Distance);
-                    while(Count--) *out++ = *Source++;
+               u8 count = *in++;
+               u8 distance = *in++;
+               if(distance) {
+                    u8 *Source = (out - distance);
+                    while(count--) *out++ = *Source++;
                } else {
-                    while(Count--) *out++ = *in++;
+                    while(count--) *out++ = *in++;
                }
           }
           
           assert(in == in_max);
           assert(out == out_max);
+     } else {
+          copy(dst, src, size);
+     }
+}
+
+sz compress_rle(void* dst, void* src, sz size) {
+     u8* out = (u8*)dst;
+     u8* out_max = out + size;
+     sz literal_count = 0;
+     u8 literals[U8_MAX];
+     u8* in = (u8*)src;
+     u8* in_max = in + size;
+     bool dont_compress = false;
+     while(in <= in_max) {
+          u8 starting_value = (in == in_max) ? 0 : in[0];
+          sz run = 0;
+          while((run < (sz)(in_max - in)) && (run < U8_MAX) && (in[run] == starting_value)) {
+               ++run;
+          }
+          
+          if((in == in_max) || (run > 1) || (literal_count == U8_MAX)) {
+               u8 literal_count8 = (u8)literal_count;
+               assert(literal_count8 == literal_count);
+               
+               if((out + 1 + literal_count) > out_max) {
+                    dont_compress = true;
+                    break;
+               }
+               
+               *out++ = literal_count8;
+               
+               for(sz Literalindex = 0; Literalindex < literal_count; ++Literalindex) {
+                    *out++ = literals[Literalindex];
+               }
+               
+               literal_count = 0;
+               
+               u8 run8 = (u8)run;
+               assert(run8 == run);
+               
+               if((out + 2) > out_max) {
+                    dont_compress = true;
+                    break;
+               }
+               
+               *out++ = run8;
+               *out++ = starting_value;
+               in += run;
+               if(in == in_max) break;
+          } else {
+               literals[literal_count++] = starting_value;
+               ++in;
+          }
+     }
+     
+     sz out_size = 0;
+     if(!dont_compress) {
+          assert(in == in_max);
+          assert(!literal_count);
+          out_size = (sz)(out - (u8*)dst);
+          assert(out_size <= size);
+          if(out_size == size) {
+               dont_compress = true;
+          }
+     }
+     
+     if(dont_compress) {
+          copy(dst, src, size);
+          out_size = size;
+     }
+     
+     return out_size;
+}
+
+void decompress_rle(void* dst, void* src, sz size, sz decompressed_size) {
+     if(decompressed_size != size) {
+          u8* out = (u8*)dst;
+          u8* in = (u8*)src;
+          u8* in_max = in + size;
+          while(in < in_max) {
+               u8 literal_count = *in++;
+               while(literal_count--) {
+                    *out++ = *in++;
+               }
+               
+               u8 rep_count = *in++;
+               u8 rep_value = *in++;
+               while(rep_count--) {
+                    *out++ = rep_value;
+               }
+          }
+          
+          assert(in == in_max);
      } else {
           copy(dst, src, size);
      }
