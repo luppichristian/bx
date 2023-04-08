@@ -10,12 +10,8 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#pragma once
-
-// ***
-
-// The first section is dedicated to platform detection, architecture detection and compiler detection.
-// Everything is detected with pre-defined macros.
+#if !defined(BX)
+#define BX
 
 // *********
 
@@ -27,14 +23,20 @@
 // Detect the current compiler.
 #if defined(__clang__)
 #define COMPILER CLANG
+#define COMPILER_NAME "CLANG"
 #elif defined(_MSC_VER)
 #define COMPILER MSVC
+#define COMPILER_NAME "MSVC"
 #elif defined(__GNUC__)
 #define COMPILER GCC
+#define COMPILER_NAME "GCC"
 #endif
 
 #if !defined(COMPILER)
 #error Unknown compiler!
+#endif
+#if !defined(COMPILER_NAME)
+#error Unknown compiler name!
 #endif
 
 // *********
@@ -47,14 +49,20 @@
 // Detect the current platform.
 #if defined(_WIN32)
 #define PLATFORM WIN32
+#define PLATFORM_NAME "WIN32"
 #elif defined(__APPLE__) && defined(__MACH__)
 #define PLATFORM MACOS
+#define PLATFORM_NAME "MACOS"
 #elif defined(__gnu_linux__) || defined(__linux__)
 #define PLATFORM LINUX
+#define PLATFORM_NAME "LINUX"
 #endif
 
 #if !defined(PLATFORM)
 #error Unknown platform!
+#endif
+#if !defined(PLATFORM_NAME)
+#error Unknown platform name!
 #endif
 
 // *********
@@ -69,38 +77,229 @@
 #if COMPILER == MSVC
 #if defined(_M_AMD64)
 #define ARCHITECTURE X64
+#define ARCHITECTURE_NAME "X64"
 #elif defined(_M_I86)
 #define ARCHITECTURE X86
+#define ARCHITECTURE_NAME "X86"
 #elif defined(_M_ARM)
 #define ARCHITECTURE ARM
+#define ARCHITECTURE_NAME "ARM"
 #elif defined(_M_ARM64)
 #define ARCHITECTURE ARM64
+#define ARCHITECTURE_NAME "ARM64"
 #endif
 
 #elif COMPILER == CLANG
 #if defined(__amd64__)
 #define ARCHITECTURE X64
+#define ARCHITECTURE_NAME "X64"
 #elif defined(__i386__)
 #define ARCHITECTURE X86
+#define ARCHITECTURE_NAME "X86"
 #elif defined(__arm__)
 #define ARCHITECTURE ARM
+#define ARCHITECTURE_NAME "ARM"
 #elif defined(__aarch64__)
 #define ARCHITECTURE ARM64
+#define ARCHITECTURE_NAME "ARM64"
 #endif
 
 #elif COMPILER == GCC
 #if defined(__amd64__)
 #define ARCHITECTURE X64
+#define ARCHITECTURE_NAME "X64"
 #elif defined(__i386__)
 #define ARCHITECTURE X86
+#define ARCHITECTURE_NAME "X86"
 #elif defined(__arm__)
 #define ARCHITECTURE ARM
+#define ARCHITECTURE_NAME "ARM"
 #elif defined(__aarch64__)
 #define ARCHITECTURE ARM64
+#define ARCHITECTURE_NAME "ARM64"
 #endif
 
 #endif
 
 #if !defined(ARCHITECTURE)
 #error Unknown architecture!
+#endif
+#if !defined(ARCHITECTURE_NAME)
+#error Unknown architecture name!
+#endif
+
+// *********
+
+#include <float.h>
+#include <stdint.h>
+
+// Numeric types (unsigned fixed length).
+typedef uint8_t  u8;
+typedef uint16_t u16;
+typedef uint32_t u32;
+typedef uint64_t u64;
+
+// Numeric types (signed fixed length).
+typedef int8_t  s8;
+typedef int16_t s16;
+typedef int32_t s32;
+typedef int64_t s64;
+
+// Numeric types (unsigned fast).
+typedef uint_fast8_t  u8x;
+typedef uint_fast16_t u16x;
+typedef uint_fast32_t u32x;
+typedef uint_fast64_t u64x;
+
+// Numeric types (signed fast).
+typedef int_fast8_t  s8x;
+typedef int_fast16_t s16x;
+typedef int_fast32_t s32x;
+typedef int_fast64_t s64x;
+
+// Numeric types (memory).
+typedef uintptr_t up;
+typedef intptr_t  sp;
+typedef size_t    sz;
+
+// Numeric types (floating point).
+typedef float  f32;
+typedef double f64;
+
+// Boolean types (unsigned fixed length).
+typedef s8  b8;
+typedef s16 b16;
+typedef s32 b32;
+typedef s64 b64;
+
+// Boolean types (unsigned fast).
+typedef s8x  b8x;
+typedef s16x b16x;
+typedef s32x b32x;
+typedef s64x b64x;
+
+// *********
+
+// Numeric types (unsigned fixed length).
+#define U8_MAX  UINT8_MAX
+#define U16_MAX UINT16_MAX
+#define U32_MAX UINT32_MAX
+#define U64_MAX UINT64_MAX
+#define U8_MIN  0
+#define U16_MIN 0
+#define U32_MIN 0
+#define U64_MIN 0
+
+// Numeric types (signed fixed length).
+#define S8_MAX  INT8_MAX
+#define S16_MAX INT16_MAX
+#define S32_MAX INT32_MAX
+#define S64_MAX INT64_MAX
+#define S8_MIN  INT8_MIN
+#define S16_MIN INT16_MIN
+#define S32_MIN INT32_MIN
+#define S64_MIN INT64_MIN
+
+// Numeric types (unsigned fast).
+#define U8X_MAX  UINT_FAST8_MAX
+#define U16X_MAX UINT_FAST16_MAX
+#define U32X_MAX UINT_FAST32_MAX
+#define U64X_MAX UINT_FAST64_MAX
+#define U8X_MIN  0
+#define U16X_MIN 0
+#define U32X_MIN 0
+#define U64X_MIN 0
+
+// Numeric types (signed fast).
+#define S8X_MAX  INT_FAST8_MAX
+#define S16X_MAX INT_FAST16_MAX
+#define S32X_MAX INT_FAST32_MAX
+#define S64X_MAX INT_FAST64_MAX
+#define S8X_MIN  INT_FAST8_MIN
+#define S16X_MIN INT_FAST16_MIN
+#define S32X_MIN INT_FAST32_MIN
+#define S64X_MIN INT_FAST64_MIN
+
+// Numeric types (memory).
+#define UP_MAX UINTPTR_MAX
+#define SP_MAX INTPTR_MAX
+#define SZ_MAX SIZE_MAX
+#define UP_MIN 0
+#define SP_MIN INTPTR_MIN
+#define SZ_MIN 0
+
+// Numeric types (floating point).
+#define F32_MAX FLT_MAX
+#define F64_MAX DBL_MAX
+#define F32_MIN (-F32_MAX)
+#define F64_MIN (-F64_MAX)
+
+// *********
+
+// Preprocessor utilities.
+#define stringify(x) #x
+#define concat(x, y) x##y
+#define stringify_exp(x) stringify(x)
+#define concat_exp(x,y) concat(x, y)
+#define expr(x) do { (x); while(0)
+#define countof(x) (sizeof(x)/sizeof((x)[0]))
+#define typeof(x) decltype(x)
+#define offsetof(str, member) ((&(((str*)(0))->member)))
+#define sizeof_each(x) sizeof((x)[0])
+#define multiline_literal(...) stringify_exp(__VA_ARGS__)
+
+// Bit utilities.
+#define bit(x) (1 << (x))
+#define is_bit_set(bits, b) ((bits)&(b))
+#define set_bit(bits, b) ((bits)|=(b))
+#define unset_bit(bits, b) ((bits)&=~(b))
+#define toggle_bit(bits, b) ((bits)^=(b))
+
+// Numeric utilities.
+#define kb(b) ((b) * 1024ll)
+#define mb(b) (kb(b) * 1024ll)
+#define gb(b) (mb(b) * 1024ll)
+#define tb(b) (gb(b) * 1024ll)
+#define th(x)((x)*1000ll)
+#define mil(x) (th(x)*1000ll)
+#define bil(x) (mil(x)*1000ll)
+#define tril(x) (bil(x)*1000ll)
+#define min(x, y) (((x) < (y)) ? (x) : (y))
+#define max(x, y) (((x) > (y)) ? (x) : (y))
+#define clamp(x, lower, upper) max(lower, min(x, upper))
+#define clamp01(x) clamp(x, 0, 1)
+#define align_pow2(x, align) (((x) + ((align) - 1)) & ~(((x) - (x)) + (align) - 1))
+#define is_pow2(x) (((x) & ((x)-1)) == 0)
+#define in_range(x, minimum, maximum) (((x) >= (minimum)) && ((x) <= (maximum)))
+#define normalize_bool(x) ((x) > 1 ? 1 : 0)
+
+// Pointers.
+#define uint_from_ptr(ptr) (up)((u8*)(ptr) - (u8*)(0))
+#define uint_to_ptr(i) (void*)((u8*)0 + (i))
+#define int_from_ptr(ptr) (sp)((u8*)(ptr) - (u8*)(0))
+#define int_to_ptr(i) (void*)((u8*)0 + (i))
+
+// Variadic arguments.
+#include <stdarg.h>
+#define var_start(list, fmt) va_start(list, fmt)
+#define var_end(list) va_end(list)
+#define var_fetch(list, type) va_arg(list, type)
+
+// Assertions.
+#define assert(x) expr(if(!(x)) { debugbreak(); })
+#define cassert(x) typedef char concat_exp(__FILE__, __LINE__) [(x)?1:-1]
+#define assert2(x, eA, eB) expr(if(x) { assert(eA); }; else { assert(eB); };)
+#define invalid_path assert(!"INVALID")
+#define invalid_default_case default: { invalid_path; } break
+#define unimplemented_path assert(!"UNIMPLEMENTED")
+
+// Misc.
+#define swap(x, y) expr( auto __z = x; x = y; y = __z; )
+#define rswap(x, y) expr( auto __z = *(x); *(x) = *(y); *(y) = __z; )
+#define fill(x, val) expr( for(uint __i = 0; __i < countof(x); ++__i) { x[__i] = val; }; )
+#define circ_increment(val, ival, cap) val = ((val + ival) % cap)
+#define circ_decrement(val, dval, cap) (val < dval) ? (cap - dval + val) : (val - dval)
+#define assign_nonvolatile(x, val) expr(typeof(x)* temp = (typeof(x)*)&(x); *temp = val;)
+#define assign_volatile(x, val) expr(volatile typeof(x)* temp = (volatile typeof(x)*)&(x); *temp = val;)
+
 #endif
