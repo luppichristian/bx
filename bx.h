@@ -325,11 +325,21 @@ typedef s64x b64x;
 #define singly_remove(first, last, previous, node) (previous) ? ((previous)->next = (node)->next) : (first = node->next); ((node)->next) ? (0) : (last = previous);
 
 // Doubly linked list utils.
-
 #define doubly_push_front(first, last, node) (node)->next = first; if(first) { (first)->previous = node; } (node)->previous = nullptr; first = node; if(!last) { last = node; }
 #define doubly_push_back(first, last, node) (last) ? ((last)->next = node) : (first = node); (node)->previous = last; (node)->next = NULL; last = node;
 #define doubly_remove(first, last, node) ((node)->previous) ? ((node)->previous->next = (node)->next) : (first = (node)->next); ((node)->next) ? ((node)->next->previous = (node)->previous) : (last = (node)->previous);
 
 // *********
+
+// Basic memory ops.
+void* copy(void* dst, void* src, sz size);
+void* set8(void* dst, u8 byte, sz count);
+void* set16(void* dst, u16 word, sz count); 
+void* set32(void* dst, u32 dword, sz count);
+void* set64(void* dst, u64 qword, sz count);
+void* zero(void* dst, sz size);
+void* move(void* dst, void* src, sz size);
+sz    compress(void* dst, void* src, sz size);
+void  decompress(void* dst, void* src, sz size, sz decompressed_size);
 
 #endif
