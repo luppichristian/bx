@@ -130,6 +130,12 @@
 
 // *********
 
+// TODO: Compiler specific.
+#define debug_break() __debugbreak()
+#define debug_step() int _______a##__LINE__ = 0
+
+// *********
+
 #include <float.h>
 #include <stdint.h>
 
@@ -236,12 +242,19 @@ typedef s64x b64x;
 
 // *********
 
+// Custom keywords.
+#define local_persist static
+#define global_variable static
+#define internal static
+#define entry_point
+#define unused
+
 // Preprocessor utilities.
 #define stringify(x) #x
 #define concat(x, y) x##y
 #define stringify_exp(x) stringify(x)
 #define concat_exp(x,y) concat(x, y)
-#define expr(x) do { (x); while(0)
+#define expr(x) do { x; } while(0)
 #define countof(x) (sizeof(x)/sizeof((x)[0]))
 #define typeof(x) decltype(x)
 #define offsetof(str, member) ((&(((str*)(0))->member)))
@@ -286,7 +299,7 @@ typedef s64x b64x;
 #define var_fetch(list, type) va_arg(list, type)
 
 // Assertions.
-#define assert(x) expr(if(!(x)) { debugbreak(); })
+#define assert(x) expr( if(!(x)) { debug_break(); } )
 #define cassert(x) typedef char concat_exp(__FILE__, __LINE__) [(x)?1:-1]
 #define assert2(x, eA, eB) expr(if(x) { assert(eA); }; else { assert(eB); };)
 #define invalid_path assert(!"INVALID")
@@ -301,5 +314,22 @@ typedef s64x b64x;
 #define circ_decrement(val, dval, cap) (val < dval) ? (cap - dval + val) : (val - dval)
 #define assign_nonvolatile(x, val) expr(typeof(x)* temp = (typeof(x)*)&(x); *temp = val;)
 #define assign_volatile(x, val) expr(volatile typeof(x)* temp = (volatile typeof(x)*)&(x); *temp = val;)
+#define repeat(x) for(u32x __i##__LINE__  = 0; __i##__LINE__ < x; __i##__LINE__++)
+
+// *********
+
+// Singly linked list utils.
+#define singly_push_front(first, last, node) (node)->next = first; first = node; if(!last) { last = node; }
+#define singly_push_back(first, last, node) node->next = nullptr; if((first) && (last)) { (last)->next = node; last = node; } else { first = last = node; }
+#define singly_pop_front(first, last) if(first) { first = (first)->next; if(!first) last = nullptr; }
+#define singly_remove(first, last, previous, node) (previous) ? ((previous)->next = (node)->next) : (first = node->next); ((node)->next) ? (0) : (last = previous);
+
+// Doubly linked list utils.
+
+#define doubly_push_front(first, last, node) (node)->next = first; if(first) { (first)->previous = node; } (node)->previous = nullptr; first = node; if(!last) { last = node; }
+#define doubly_push_back(first, last, node) (last) ? ((last)->next = node) : (first = node); (node)->previous = last; (node)->next = NULL; last = node;
+#define doubly_remove(first, last, node) ((node)->previous) ? ((node)->previous->next = (node)->next) : (first = (node)->next); ((node)->next) ? ((node)->next->previous = (node)->previous) : (last = (node)->previous);
+
+// *********
 
 #endif
