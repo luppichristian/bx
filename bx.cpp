@@ -1,5 +1,5 @@
 
- // Copyright 2023 Christian Luppi
+// Copyright 2023 Christian Luppi
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
 // and associated documentation files (the "Software"), to use the Software for learning purposes only. 
 // Any commercial use, reproduction, distribution, modification, or creation of derivative works from this Software, 
@@ -160,30 +160,6 @@ sz compress_lz(void* dst, void* src, sz size) {
      return out_size;
 }
 
-void decompress_lz(void* dst, void* src, sz size, sz decompressed_size) {
-     if(decompressed_size != size) {
-          u8* out = (u8*)dst;
-          u8* out_max = out + decompressed_size;
-          u8* in = (u8*)src;
-          u8* in_max = in + size;
-          while(in < in_max) {
-               u8 count = *in++;
-               u8 distance = *in++;
-               if(distance) {
-                    u8 *Source = (out - distance);
-                    while(count--) *out++ = *Source++;
-               } else {
-                    while(count--) *out++ = *in++;
-               }
-          }
-          
-          assert(in == in_max);
-          assert(out == out_max);
-     } else {
-          copy(dst, src, size);
-     }
-}
-
 sz compress_rle(void* dst, void* src, sz size) {
      u8* out = (u8*)dst;
      u8* out_max = out + size;
@@ -253,6 +229,30 @@ sz compress_rle(void* dst, void* src, sz size) {
      return out_size;
 }
 
+void decompress_lz(void* dst, void* src, sz size, sz decompressed_size) {
+     if(decompressed_size != size) {
+          u8* out = (u8*)dst;
+          u8* out_max = out + decompressed_size;
+          u8* in = (u8*)src;
+          u8* in_max = in + size;
+          while(in < in_max) {
+               u8 count = *in++;
+               u8 distance = *in++;
+               if(distance) {
+                    u8 *Source = (out - distance);
+                    while(count--) *out++ = *Source++;
+               } else {
+                    while(count--) *out++ = *in++;
+               }
+          }
+          
+          assert(in == in_max);
+          assert(out == out_max);
+     } else {
+          copy(dst, src, size);
+     }
+}
+
 void decompress_rle(void* dst, void* src, sz size, sz decompressed_size) {
      if(decompressed_size != size) {
           u8* out = (u8*)dst;
@@ -274,5 +274,93 @@ void decompress_rle(void* dst, void* src, sz size, sz decompressed_size) {
           assert(in == in_max);
      } else {
           copy(dst, src, size);
+     }
+}
+
+b8x are_sorted(sort_entry* entries, u32 count) {
+     bool sorted = true;
+     if(count > 1) {
+          for(u32 i = 0; i < (count - 1); i++) {
+               sort_entry* e0 = entries + i;
+               sort_entry* e1 = e0 + 1;
+               if(e0->key > e1->key) {
+                    sorted = false;
+                    break;
+               }
+          }
+     }
+     
+     return sorted;
+}
+
+void sort_bubble(sort_entry* entries, u32 count) {
+     if(count > 1) {
+          for(u32 outer = 0; outer < count; outer++) {
+               bool Sorted = true;
+               for(u32 inner = 0; inner < (count - 1); inner++) {
+                    sort_entry* e0 = entries + inner;
+                    sort_entry* e1 = e0 + 1;
+                    if(e0->key > e1->key) {
+                         rswap(e0, e1);
+                         Sorted = false;
+                    }
+               }
+               
+               if(Sorted) {
+                    break;
+               }
+          }
+     }
+}
+
+internal void sort_quick_internal(sort_entry* entries, u32 first_entry, u32 last_entry) {
+     if(first_entry < last_entry) {
+          u32 pivot = first_entry;
+          u32 i = first_entry;
+          u32 j = last_entry;
+          
+          while(i < j) {
+               while(entries[i].key <= entries[pivot].key && i < last_entry) i++;
+               while(entries[j].key > entries[pivot].key) j--;
+               if(i < j) rswap(&entries[i], &entries[j]);
+          }
+          
+          rswap(&entries[pivot], &entries[j]);
+          sort_quick_internal(entries, first_entry, j-1);
+          sort_quick_internal(entries, j+1, last_entry);
+     }
+}
+
+void sort_quick(sort_entry* entries, u32 count) {
+     sort_quick_internal(entries, 0, count-1);
+}
+
+void sort_radix(sort_entry* entries, u32 count) {
+     if(count > 1) {
+          sort_entry* temp = 0; // TODO: allocate from scratch memory.
+          sort_entry* src = entries;
+          sort_entry* dst = temp;
+          for(u32 byte_index = 0; byte_index < 32; byte_index += 8) {
+               u32 offsets[256] = {};
+               
+               for(u32 i = 0; i < count; ++i) {
+                    u32 piece = (src[i].key >> byte_index) & 0xFF;
+                    ++offsets[piece];
+               }
+               
+               u32 total = 0;
+               for(u32 i = 0; i < countof(offsets); ++i) {
+                    u32 Count = offsets[i];
+                    offsets[i] = total;
+                    total += Count;
+               }
+               
+               for(u32 i = 0; i < count; ++i) {
+                    u32 piece = (src[i].key >> byte_index) & 0xFF;
+                    dst[offsets[piece]++] = src[i];
+               }
+               
+               swap(dst, src);
+          }
      }
 }

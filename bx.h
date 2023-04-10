@@ -1,5 +1,5 @@
 
- // Copyright 2023 Christian Luppi
+// Copyright 2023 Christian Luppi
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
 // and associated documentation files (the "Software"), to use the Software for learning purposes only. 
 // Any commercial use, reproduction, distribution, modification, or creation of derivative works from this Software, 
@@ -242,6 +242,16 @@ typedef s64x b64x;
 #define internal static
 #define entry_point
 #define unused
+#define c_linkage extern "C"
+
+// Shared library export.
+#if COMPILER == MSVC
+#define shared_export __declspec(dllexport)
+#elif COMPILER == CLANG
+#define shared_export __declspec(dllexport)
+#elif COMPILER == GCC
+#define shared_export __attribute__((visibility("default")))
+#endif
 
 // Preprocessor utilities.
 #define stringify(x) #x
@@ -307,7 +317,7 @@ typedef s64x b64x;
 // Misc.
 #define swap(x, y) expr( auto __z = x; x = y; y = __z; )
 #define rswap(x, y) expr( auto __z = *(x); *(x) = *(y); *(y) = __z; )
-#define fill(x, val) expr( for(uint __i = 0; __i < countof(x); ++__i) { x[__i] = val; }; )
+#define fill(x, val) expr( for(u32x __i = 0; __i < countof(x); ++__i) { x[__i] = (val); }; )
 #define circ_increment(val, ival, cap) val = ((val + ival) % cap)
 #define circ_decrement(val, dval, cap) (val < dval) ? (cap - dval + val) : (val - dval)
 #define assign_nonvolatile(x, val) expr(typeof(x)* temp = (typeof(x)*)&(x); *temp = val;)
@@ -317,12 +327,14 @@ typedef s64x b64x;
 // *********
 
 // Singly linked list utils.
+#define singly_push_after(first, last, node, previous) if(previous) { if(previous->next) { (node)->next = (previous)->next; (previous)->next = node; } else { singly_push_back(first, last, node); }  } else { singly_push_front(first, last, node); }
 #define singly_push_front(first, last, node) (node)->next = first; first = node; if(!last) { last = node; }
 #define singly_push_back(first, last, node) node->next = nullptr; if((first) && (last)) { (last)->next = node; last = node; } else { first = last = node; }
 #define singly_pop_front(first, last) if(first) { first = (first)->next; if(!first) last = nullptr; }
 #define singly_remove(first, last, previous, node) (previous) ? ((previous)->next = (node)->next) : (first = node->next); ((node)->next) ? (0) : (last = previous);
 
 // Doubly linked list utils.
+#define doubly_push_after(first, last, node, previous) if(previous) { if(previous->next) { (node)->next = (previous)->next; (previous)->next = node; ((node)->next)->previous = node; } else { doubly_push_back(first, last, node); }  } else { doubly_push_front(first, last, node); } 
 #define doubly_push_front(first, last, node) (node)->next = first; if(first) { (first)->previous = node; } (node)->previous = nullptr; first = node; if(!last) { last = node; }
 #define doubly_push_back(first, last, node) (last) ? ((last)->next = node) : (first = node); (node)->previous = last; (node)->next = NULL; last = node;
 #define doubly_remove(first, last, node) ((node)->previous) ? ((node)->previous->next = (node)->next) : (first = (node)->next); ((node)->next) ? ((node)->next->previous = (node)->previous) : (last = (node)->previous);
@@ -341,10 +353,31 @@ void* align(void* ptr, up alignment);
 void* align(void* ptr, up padding, up alignment);
 bool  compare(void* a, void* b, sz size);
 
+// Macros for basic memory ops.
+#define zero_obj(x) (typeof(x))(zero(x, sizeof(*(x)))
+#define copy_obj(dst, src) (typeof(dst))(copy(dst, src, sizeof(*(dst))))
+#define compare_objs(a, b) compare(a, b, sizeof(*(a)))
+#define zero_array(x, count) (typeof(x))(zero(x, sizeof(*(x))  * count)
+#define copy_array(dst, src, count) (typeof(dst))(copy(dst, src, sizeof(*(dst))  * count))
+#define compare_arrays(a, b, count) compare(a, b, sizeof(*(a)) * count)
+
 // Compression.
-sz    compress_lz(void* dst, void* src, sz size);
-void  decompress_lz(void* dst, void* src, sz size, sz decompressed_size);
-sz    compress_rle(void* dst, void* src, sz size);
-void  decompress_rle(void* dst, void* src, sz size, sz decompressed_size);
+sz compress_lz(void* dst, void* src, sz size);
+sz compress_rle(void* dst, void* src, sz size);
+void decompress_lz(void* dst, void* src, sz size, sz decompressed_size);
+void decompress_rle(void* dst, void* src, sz size, sz decompressed_size);
+
+// *********
+
+struct sort_entry {
+     u32 key;
+     u32 value;
+};
+
+// Sort algorithms.
+b8x are_sorted(sort_entry* entries, u32 count);
+void sort_bubble(sort_entry* entries, u32 count);
+void sort_quick(sort_entry* entries, u32 count);
+void sort_radix(sort_entry* entries, u32 count);
 
 #endif
