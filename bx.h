@@ -557,9 +557,6 @@ struct v2 {
      union {
           f32 e[2];
           struct { f32 x, y; }; 
-          struct { f32 u, v; }; 
-          struct { f32 r, g; }; 
-          struct { f32 a, b; }; 
      };
 };
 
@@ -626,8 +623,6 @@ struct v3 {
      union {
           f32 e[3];
           struct { f32 x, y, z; }; 
-          struct { f32 r, g, b; }; 
-          struct { f32 a, b, c; };
           struct { v2 xy; f32 _z; };
           struct { f32 _x; v2 yz; };
      };
@@ -691,5 +686,74 @@ v3 round(v3 x);
 
 // *********
 // *********
+
+// 4D vector.
+struct v4 {
+     union {
+          f32 e[4];
+          struct { f32 x, y, z, w; }; 
+          struct { v2 xy; v2 zw; };
+          struct { f32 _x; v2 yz; f32 _w; };
+          struct { v3 xyz; f32 __w; };
+          struct { f32 __x; v3 yzw; };
+     };
+};
+
+// 4D vector constructors.
+v4 V4(void);
+v4 V4(f32 x);
+v4 V4(f32 x, f32 y, f32 z, f32 w);
+v4 V4(v2 xy, v2 zw);
+v4 V4(f32 x, v2 yz, f32 w);
+v4 V4(v3 xyz, f32 w);
+v4 V4(f32 x, v3 yzw);
+
+// 4D vector operators.
+v4 operator+(v4 a, v4 b);
+v4 operator-(v4 a, v4 b);
+v4 operator*(v4 a, v4 b);
+v4 operator/(v4 a, v4 b);
+v4 operator+(v4 a, f32 b);
+v4 operator-(v4 a, f32 b);
+v4 operator*(v4 a, f32 b);
+v4 operator/(v4 a, f32 b);
+v4 operator+(f32 a, v4 b);
+v4 operator-(f32 a, v4 b);
+v4 operator*(f32 a, v4 b);
+v4 operator/(f32 a, v4 b);
+v4 operator+=(v4& a, v4 b);
+v4 operator-=(v4& a, v4 b);
+v4 operator*=(v4& a, v4 b);
+v4 operator/=(v4& a, v4 b);
+v4 operator+=(v4& a, f32 b);
+v4 operator-=(v4& a, f32 b);
+v4 operator*=(v4& a, f32 b);
+v4 operator/=(v4& a, f32 b);
+b8x operator>(v4 a, v4 b);
+b8x operator<(v4 a, v4 b);
+b8x operator>=(v4 a, v4 b);
+b8x operator<=(v4 a, v4 b);
+v4 operator+(v4 a);
+v4 operator-(v4 a);
+
+// 4D vector operations.
+f32 inner(v4 a, v4 b);
+f32 lensq(v4 x);
+f32 len(v4 x);
+f32 distancesq(v4 a, v4 b);
+f32 distance(v4 a, v4 b);
+v4 round_to_multiple(v4 x, f32 multiple);
+v4 normalize(v4 x);
+v4 abs(v4 x);
+v4 sqrt(v4 x);
+v4 lerp(v4 a, v4 b, v4 t);
+v4 lerp(v4 a, v4 b, f32 t);
+v4 unilateral_to_bilateral(v4 x);
+v4 bilateral_to_unilateral(v4 x);
+v4 min2(v4 a, v4 b);
+v4 max2(v4 a, v4 b);
+v4 clamp2(v4 x, v4 minimum, v4 maximum);
+v4 nearby(v4 x);
+v4 round(v4 x);
 
 #endif

@@ -1229,6 +1229,14 @@ v3 operator-(v3 a) {
      return {-a.x, -a.y, -a.z};
 }
 
+v3 cross(v3 a, v3 b) {
+     return {
+          a.y * b.z - a.z * b.y,
+          a.z * b.x - a.x * b.z,
+          a.x * b.y - a.y * b.x,
+     };
+}
+
 f32 inner(v3 a, v3 b) {
      return a.x*b.x + a.y*b.y + a.z*b.z;
 }
@@ -1300,4 +1308,210 @@ v3 nearby(v3 x) {
 
 v3 round(v3 x) {
      return {round(x.x), round(x.y), round(x.z)};
+}
+
+v4 V4(void) {
+     return {};
+}
+
+v4 V4(f32 x) {
+     return {x,x,x,x};
+}
+
+v4 V4(f32 x, f32 y, f32 z, f32 w) {
+     return {x,y,z,w};
+}
+
+v4 V4(v2 xy, v2 zw) {
+     return {xy.x,xy.y,zw.x,zw.y};
+}
+
+v4 V4(f32 x, v2 yz, f32 w) {
+     return {x,yz.x,yz.y,w};
+}
+
+v4 V4(v3 xyz, f32 w) {
+     return {xyz.x, xyz.y, xyz.z, w};
+}
+
+v4 V4(f32 x, v3 yzw) {
+     return {x, yzw.x, yzw.y, yzw.z};
+}
+
+v4 operator+(v4 a, v4 b) {
+     return {a.x+b.x, a.y+b.y, a.z+b.z, a.w+b.w};
+}
+
+v4 operator-(v4 a, v4 b) {
+     return {a.x-b.x, a.y-b.y, a.z-b.z, a.w-b.w};
+}
+
+v4 operator*(v4 a, v4 b) {
+     return {a.x*b.x, a.y*b.y, a.z*b.z, a.w*b.w};
+}
+
+v4 operator/(v4 a, v4 b) {
+     return {a.x/b.x, a.y/b.y, a.z/b.z, a.w/b.w};
+}
+
+v4 operator+(v4 a, f32 b) {
+     return a + V4(b);
+}
+
+v4 operator-(v4 a, f32 b) {
+     return a - V4(b);
+}
+
+v4 operator*(v4 a, f32 b) {
+     return a * V4(b);
+}
+
+v4 operator/(v4 a, f32 b) {
+     return a / V4(b);
+}
+
+v4 operator+(f32 a, v4 b) {
+     return V4(a) + b;
+}
+
+v4 operator-(f32 a, v4 b) {
+     return V4(a) - b;
+}
+
+v4 operator*(f32 a, v4 b) {
+     return V4(a) * b;
+}
+
+v4 operator/(f32 a, v4 b) {
+     return V4(a) / b;
+}
+
+v4 operator+=(v4& a, v4 b) {
+     return a = a + b;
+}
+
+v4 operator-=(v4& a, v4 b) {
+     return a = a - b;
+}
+
+v4 operator*=(v4& a, v4 b) {
+     return a = a * b;
+}
+
+v4 operator/=(v4& a, v4 b) {
+     return a = a / b;
+}
+
+v4 operator+=(v4& a, f32 b) {
+     return a = a + b;
+}
+
+v4 operator-=(v4& a, f32 b) {
+     return a = a - b;
+}
+
+v4 operator*=(v4& a, f32 b) {
+     return a = a * b;
+}
+
+v4 operator/=(v4& a, f32 b) {
+     return a = a / b;
+}
+
+b8x operator>(v4 a, v4 b) {
+     return (a.x>b.x)&& (a.y>b.y) && (a.z>b.z) && (a.w>b.w);
+}
+
+b8x operator<(v4 a, v4 b) {
+     return (a.x<b.x)&& (a.y<b.y) && (a.z<b.z) && (a.w<b.w);
+}
+
+b8x operator>=(v4 a, v4 b) {
+     return (a.x>=b.x)&& (a.y>=b.y) && (a.z>=b.z) && (a.w>=b.w);
+}
+
+b8x operator<=(v4 a, v4 b) {
+     return (a.x<=b.x)&& (a.y<=b.y) && (a.z<=b.z) && (a.w<=b.w);
+}
+
+v4 operator+(v4 a) {
+     return {+a.x, +a.y, +a.z, +a.w};
+}
+
+v4 operator-(v4 a) {
+     return {-a.x, -a.y, -a.z, -a.w};
+}
+
+
+f32 inner(v4 a, v4 b) {
+     return a.x*b.x + a.y*b.y + a.z*b.z + a.w*b.w;
+}
+
+f32 lensq(v4 x) {
+     return inner(x, x);
+}
+
+f32 len(v4 x) {
+     return sqrt(lensq(x));
+}
+
+f32 distancesq(v4 a, v4 b) {
+     return square(a.x-b.x) + square(a.y-b.y) + square(a.z-b.z) + square(a.w-b.w);
+}
+
+f32 distance(v4 a, v4 b) {
+     return sqrt(distancesq(a, b));
+}
+
+v4 round_to_multiple(v4 x, f32 multiple) {
+     return {round_to_multiple(x.x, multiple), round_to_multiple(x.y, multiple), round_to_multiple(x.z, multiple), round_to_multiple(x.w, multiple)};
+}
+
+v4 normalize(v4 x) {
+     f32 l = len(x);
+     return x * io0(l);
+}
+
+v4 abs(v4 x) {
+     return {abs(x.x), abs(x.y), abs(x.z), abs(x.w)};
+}
+
+v4 sqrt(v4 x) {
+     return {sqrt(x.x), sqrt(x.y)};
+}
+
+v4 lerp(v4 a, v4 b, v4 t) {
+     return {lerp(a.x, b.x, t.x), lerp(a.y, b.y, t.y), lerp(a.z, b.z, t.z), lerp(a.w, b.w, t.w)};
+}
+
+v4 lerp(v4 a, v4 b, f32 t) {
+     return lerp(a, b, V4(t));
+}
+
+v4 unilateral_to_bilateral(v4 x) {
+     return {unilateral_to_bilateral(x.x), unilateral_to_bilateral(x.y), unilateral_to_bilateral(x.z), unilateral_to_bilateral(x.w)};
+}
+
+v4 bilateral_to_unilateral(v4 x) {
+     return {bilateral_to_unilateral(x.x), bilateral_to_unilateral(x.y), bilateral_to_unilateral(x.z), bilateral_to_unilateral(x.w)};
+}
+
+v4 min2(v4 a, v4 b) {
+     return{min(a.x, b.x), min(a.y, b.y), min(a.z, b.z), min(a.w, b.w)};
+}
+
+v4 max2(v4 a, v4 b) {
+     return{max(a.x, b.x), max(a.y, b.y), max(a.z, b.z), max(a.w, b.w)};
+}
+
+v4 clamp2(v4 x, v4 minimum, v4 maximum) {
+     return{clamp(x.x, minimum.x, maximum.x), clamp(x.y, minimum.y, maximum.y), clamp(x.z, minimum.z, maximum.z), clamp(x.w, minimum.w, maximum.w)};
+}
+
+v4 nearby(v4 x) {
+     return {nearby(x.x), nearby(x.y), nearby(x.z), nearby(x.w)};
+}
+
+v4 round(v4 x) {
+     return {round(x.x), round(x.y), round(x.z), round(x.w)};
 }
