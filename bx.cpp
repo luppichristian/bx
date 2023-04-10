@@ -14,6 +14,10 @@
 #error Missing header!
 #endif
 
+#if COMPILER == MSVC
+#include <intrin.h>
+#endif
+
 u32 f32_to_u32(f32 x) {
      return *((u32*)(&x));
 }
@@ -461,4 +465,272 @@ f64 unilateral_f64(rng* rn) {
 
 f64 bilateral_f64(rng* rn) {
      return unilateral_f64(rn) * 2.0f - 1.0f;
+}
+
+u32 rotate_left(u32 x, u32 shift) {
+#if COMPILER == MSVC
+     return _rotl(x, shift);
+#endif
+}
+
+u32 rotate_right(u32 x, u32 shift) {
+#if COMPILER == MSVC
+     return _rotr(x, shift);
+#endif
+}
+
+u64 rotate_left(u64 x, u64 shift) {
+#if COMPILER == MSVC
+     return _rotl64(x, shift);
+#endif
+}
+
+u64 rotate_right(u64 x, u64 shift) {
+#if COMPILER == MSVC
+     return _rotr64(x, shift);
+#endif
+}
+
+s16 eswap(s16 x) {
+#if COMPILER == MSVC
+     return (s16)eswap((u16)x);
+#endif
+}
+
+u16 eswap(u16 x) {
+#if COMPILER == MSVC
+     return _byteswap_ushort(x);
+#endif
+}
+
+s32 eswap(s32 x) {
+#if COMPILER == MSVC
+     return (s32)eswap((u32)x);
+#endif
+}
+
+u32 eswap(u32 x) {
+#if COMPILER == MSVC
+     return _byteswap_ulong(x);
+#endif
+}
+
+s64 eswap(s64 x) {
+#if COMPILER == MSVC
+     return (s64)eswap((u64)x);
+#endif
+}
+
+u64 eswap(u64 x) {
+#if COMPILER == MSVC
+     return _byteswap_uint64(x);
+#endif
+}
+
+void eswap(s16* x) {
+     *x = eswap(*x);
+}
+
+void eswap(u16* x) {
+     *x = eswap(*x);
+}
+
+void eswap(s32* x) {
+     *x = eswap(*x);
+}
+
+void eswap(u32* x) {
+     *x = eswap(*x);
+}
+
+void eswap(s64* x) {
+     *x = eswap(*x);
+}
+
+void eswap(u64* x) {
+     *x = eswap(*x);
+}
+
+s16 int_increment(volatile s16* x) {
+#if COMPILER == MSVC
+     return _InterlockedIncrement16((volatile short*)x) - 1;
+#endif
+}
+
+u16 int_increment(volatile u16* x) {
+#if COMPILER == MSVC
+     return (u16)_InterlockedIncrement16((volatile short*)x) - 1;
+#endif
+}
+
+s32 int_increment(volatile s32* x) {
+#if COMPILER == MSVC
+     return _InterlockedIncrement((volatile long*)x) - 1;
+#endif
+}
+
+u32 int_increment(volatile u32* x) {
+#if COMPILER == MSVC
+     return (u32)_InterlockedIncrement((volatile long*)x) - 1;
+#endif
+}
+
+s64 int_increment(volatile s64* x) {
+#if COMPILER == MSVC
+     return _InterlockedIncrement64((volatile __int64*)x) - 1;
+#endif
+}
+
+u64 int_increment(volatile u64* x) {
+#if COMPILER == MSVC
+     return (u64)_InterlockedIncrement64((volatile __int64*)x) - 1;
+#endif
+}
+
+s16 int_decrement(volatile s16* x) {
+#if COMPILER == MSVC
+     return _InterlockedDecrement16((volatile short*)x) + 1;
+#endif
+}
+
+u16 int_decrement(volatile u16* x) {
+#if COMPILER == MSVC
+     return (u16)_InterlockedDecrement16((volatile short*)x) + 1;
+#endif
+}
+
+s32 int_decrement(volatile s32* x) {
+#if COMPILER == MSVC
+     return _InterlockedDecrement((volatile long*)x) + 1;
+#endif
+}
+
+u32 int_decrement(volatile u32* x) {
+#if COMPILER == MSVC
+     return (u32)_InterlockedDecrement((volatile long*)x) + 1;
+#endif
+}
+
+s64 int_decrement(volatile s64* x) {
+#if COMPILER == MSVC
+     return _InterlockedDecrement64((volatile __int64*)x) + 1;
+#endif
+}
+
+u64 int_decrement(volatile u64* x) {
+#if COMPILER == MSVC
+     return (u64)_InterlockedDecrement64((volatile __int64*)x) + 1;
+#endif
+}
+
+s16 int_compare_exchange(volatile s16* x, s16 compare_to, s16 exchange_value) {
+#if COMPILER == MSVC
+     return _InterlockedCompareExchange16((volatile short*)x, exchange_value, compare_to);
+#endif
+}
+
+u16 int_compare_exchange(volatile u16* x, u16 compare_to, u16 exchange_value) {
+#if COMPILER == MSVC
+     return (u16)_InterlockedCompareExchange16((volatile short*)x, exchange_value, compare_to);
+#endif
+}
+
+s32 int_compare_exchange(volatile s32* x, s32 compare_to, s32 exchange_value) {
+#if COMPILER == MSVC
+     return _InterlockedCompareExchange((volatile long*)x, exchange_value, compare_to);
+#endif
+}
+
+u32 int_compare_exchange(volatile u32* x, u32 compare_to, u32 exchange_value) {
+#if COMPILER == MSVC
+     return (u32)_InterlockedCompareExchange((volatile long*)x, exchange_value, compare_to);
+#endif
+}
+
+s64 int_compare_exchange(volatile s64* x, s64 compare_to, s64 exchange_value) {
+#if COMPILER == MSVC
+     return _InterlockedCompareExchange64((volatile __int64*)x, exchange_value, compare_to);
+#endif
+}
+
+u64 int_compare_exchange(volatile u64* x, u64 compare_to, u64 exchange_value) {
+#if COMPILER == MSVC
+     return (u64)_InterlockedCompareExchange64((volatile __int64*)x, exchange_value, compare_to);
+#endif
+}
+
+s16 int_exchange(volatile s16* x, s16 exchange_value) {
+#if COMPILER == MSVC
+     return _InterlockedExchange16((volatile short*)x, exchange_value);
+#endif
+}
+
+u16 int_exchange(volatile u16* x, u16 exchange_value) {
+#if COMPILER == MSVC
+     return (u16)_InterlockedExchange16((volatile short*)x, exchange_value);
+#endif
+}
+
+s32 int_exchange(volatile s32* x, s32 exchange_value) {
+#if COMPILER == MSVC
+     return _InterlockedExchange((volatile long*)x, exchange_value);
+#endif
+}
+
+u32 int_exchange(volatile u32* x, u32 exchange_value) {
+#if COMPILER == MSVC
+     return (u32)_InterlockedExchange((volatile long*)x, exchange_value);
+#endif
+}
+
+s64 int_exchange(volatile s64* x, s64 exchange_value) {
+#if COMPILER == MSVC
+     return _InterlockedExchange64((volatile __int64*)x, exchange_value);
+#endif
+}
+
+u64 int_exchange(volatile u64* x, u64 exchange_value) {
+#if COMPILER == MSVC
+     return (u64)_InterlockedExchange64((volatile __int64*)x, exchange_value);
+#endif
+}
+
+u8 least_significant_bit(u32 mask) {
+#if COMPILER == MSVC
+     u8 index = U8_MAX;
+     if(!_BitScanForward((unsigned long*)&index, mask)) {
+          index = U8_MAX;
+     }
+     return index;
+#endif
+}
+
+u8 most_significant_bit(u32 mask) {
+#if COMPILER == MSVC
+     u8 index = U8_MAX;
+     if(!_BitScanReverse((unsigned long*)&index, mask)) {
+          index = U8_MAX;
+     }
+     return index;
+#endif
+}
+
+u8 least_significant_bit(u64 mask) {
+#if COMPILER == MSVC
+     u8 index = U8_MAX;
+     if(!_BitScanForward64((unsigned long*)&index, mask)) {
+          index = U8_MAX;
+     }
+     return index;
+#endif
+}
+
+u8 most_significant_bit(u64 mask) {
+#if COMPILER == MSVC
+     u8 index = U8_MAX;
+     if(!_BitScanReverse64((unsigned long*)&index, mask)) {
+          index = U8_MAX;
+     }
+     return index;
+#endif
 }

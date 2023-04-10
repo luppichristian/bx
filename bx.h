@@ -14,6 +14,7 @@
 #define BX
 
 // *********
+// *********
 
 // List of the supported compilers.
 #define CLANG 0x01
@@ -40,6 +41,7 @@
 #endif
 
 // *********
+// *********
 
 // List of the supported platforms.
 #define WIN32 0x01
@@ -65,6 +67,7 @@
 #error Unknown platform name!
 #endif
 
+// *********
 // *********
 
 // List of the supported architectures.
@@ -129,6 +132,7 @@
 #endif
 
 // *********
+// *********
 
 #include <float.h>
 #include <stdint.h>
@@ -178,6 +182,7 @@ typedef s16x b16x;
 typedef s32x b32x;
 typedef s64x b64x;
 
+// *********
 // *********
 
 // Numeric types (unsigned fixed length).
@@ -235,6 +240,7 @@ typedef s64x b64x;
 #define F64_MIN (-F64_MAX)
 
 // *********
+// *********
 
 // Custom keywords.
 #define local_persist static
@@ -243,6 +249,7 @@ typedef s64x b64x;
 #define entry_point
 #define unused
 #define c_linkage extern "C"
+#define temporary
 
 // Shared library export.
 #if COMPILER == MSVC
@@ -251,6 +258,13 @@ typedef s64x b64x;
 #define shared_export __declspec(dllexport)
 #elif COMPILER == GCC
 #define shared_export __attribute__((visibility("default")))
+#endif
+
+// Compiler fence.
+#if COMPILER == MSVC
+#define fence { _ReadWriteBarrier(); _mm_mfence(); }
+#else
+#define fence
 #endif
 
 // Preprocessor utilities.
@@ -286,6 +300,9 @@ typedef s64x b64x;
 #define clamp(x, lower, upper) max(lower, min(x, upper))
 #define clamp01(x) clamp(x, 0, 1)
 #define align_pow2(x, align) (((x) + ((align) - 1)) & ~(((x) - (x)) + (align) - 1))
+#define align4(x) (((x) + 3) & ~3)
+#define align8(x) (((x) + 7) & ~7)
+#define align16(x) (((x) + 15) & ~15)
 #define is_pow2(x) (((x) & ((x)-1)) == 0)
 #define in_range(x, minimum, maximum) (((x) >= (minimum)) && ((x) <= (maximum)))
 #define normalize_bool(x) ((x) > 1 ? 1 : 0)
@@ -324,6 +341,16 @@ typedef s64x b64x;
 #define assign_volatile(x, val) expr(volatile typeof(x)* temp = (volatile typeof(x)*)&(x); *temp = val;)
 #define repeat(x) for(u32x __i##__LINE__  = 0; __i##__LINE__ < x; __i##__LINE__++)
 
+// Integer packing.
+#define pack_u64_x2(a, b) ((u64(b) << 32) | u64(a))
+
+// Floating point to integer conversion without casting.
+u32 f32_to_u32(f32 x);
+u64 f64_to_u64(f64 x);
+f32 f32_from_u32(u32 x);
+f64 f64_from_u64(u64 x);
+
+// *********
 // *********
 
 // Singly linked list utils.
@@ -340,16 +367,6 @@ typedef s64x b64x;
 #define doubly_remove(first, last, node) ((node)->previous) ? ((node)->previous->next = (node)->next) : (first = (node)->next); ((node)->next) ? ((node)->next->previous = (node)->previous) : (last = (node)->previous);
 
 // *********
-
-// Integer packing.
-#define pack_u64_x2(a, b) ((u64(b) << 32) | u64(a))
-
-// Floating point to integer conversion without casting.
-u32 f32_to_u32(f32 x);
-u64 f64_to_u64(f64 x);
-f32 f32_from_u32(u32 x);
-f64 f64_from_u64(u64 x);
-
 // *********
 
 // Basic memory ops.
@@ -379,6 +396,7 @@ void decompress_lz(void* dst, void* src, sz size, sz decompressed_size);
 void decompress_rle(void* dst, void* src, sz size, sz decompressed_size);
 
 // *********
+// *********
 
 struct sort_entry {
      u32 key;
@@ -391,6 +409,7 @@ void sort_bubble(sort_entry* entries, u32 count);
 void sort_quick(sort_entry* entries, u32 count);
 void sort_radix(sort_entry* entries, u32 count);
 
+// *********
 // *********
 
 struct rng {
@@ -426,5 +445,62 @@ f32 unilateral_f32(rng* rn); // Values between 0 and 1.
 f32 bilateral_f32(rng* rn); // Values between -1 and 1.
 f64 unilateral_f64(rng* rn); // Values between 0 and 1.
 f64 bilateral_f64(rng* rn); // Values between -1 and 1.
+
+// *********
+// *********
+
+// Bit rotation intrinsics.
+u32 rotate_left(u32 x, u32 shift);
+u32 rotate_right(u32 x, u32 shift);
+u64 rotate_left(u64 x, u64 shift);
+u64 rotate_right(u64 x, u64 shift);
+
+// Endian swapping.
+s16 eswap(s16 x);
+u16 eswap(u16 x);
+s32 eswap(s32 x);
+u32 eswap(u32 x);
+s64 eswap(s64 x);
+u64 eswap(u64 x);
+
+// Endian swapping (direct).
+void eswap(s16* x);
+void eswap(u16* x);
+void eswap(s32* x);
+void eswap(u32* x);
+void eswap(s64* x);
+void eswap(u64* x);
+
+// Interlocked operations.
+s16 int_increment(volatile s16* x); // Returns the non-incremented value.
+u16 int_increment(volatile u16* x); // Returns the non-incremented value.
+s32 int_increment(volatile s32* x); // Returns the non-incremented value.
+u32 int_increment(volatile u32* x); // Returns the non-incremented value.
+s64 int_increment(volatile s64* x); // Returns the non-incremented value.
+u64 int_increment(volatile u64* x); // Returns the non-incremented value.
+s16 int_decrement(volatile s16* x); // Returns the non-decremented value.
+u16 int_decrement(volatile u16* x); // Returns the non-decremented value.
+s32 int_decrement(volatile s32* x); // Returns the non-decremented value.
+u32 int_decrement(volatile u32* x); // Returns the non-decremented value.
+s64 int_decrement(volatile s64* x); // Returns the non-decremented value.
+u64 int_decrement(volatile u64* x); // Returns the non-decremented value.
+s16 int_compare_exchange(volatile s16* x, s16 compare_to, s16 exchange_value); // Returns the value before the exchange. 
+u16 int_compare_exchange(volatile u16* x, u16 compare_to, u16 exchange_value); // Returns the value before the exchange. 
+s32 int_compare_exchange(volatile s32* x, s32 compare_to, s32 exchange_value); // Returns the value before the exchange. 
+u32 int_compare_exchange(volatile u32* x, u32 compare_to, u32 exchange_value); // Returns the value before the exchange. 
+s64 int_compare_exchange(volatile s64* x, s64 compare_to, s64 exchange_value); // Returns the value before the exchange. 
+u64 int_compare_exchange(volatile u64* x, u64 compare_to, u64 exchange_value); // Returns the value before the exchange. 
+s16 int_exchange(volatile s16* x, s16 exchange_value); // Returns the value before the write.
+u16 int_exchange(volatile u16* x, u16 exchange_value); // Returns the value before the write.
+s32 int_exchange(volatile s32* x, s32 exchange_value); // Returns the value before the write.
+u32 int_exchange(volatile u32* x, u32 exchange_value); // Returns the value before the write.
+s64 int_exchange(volatile s64* x, s64 exchange_value); // Returns the value before the write.
+u64 int_exchange(volatile u64* x, u64 exchange_value); // Returns the value before the write.
+
+// Bit scanning.
+u8 least_significant_bit(u32 mask); // Returns the bit index (0 is valid).
+u8 most_significant_bit(u32 mask);  // Returns the bit index (0 is valid).
+u8 least_significant_bit(u64 mask);  // Returns the bit index (0 is valid).
+u8 most_significant_bit(u64 mask);  // Returns the bit index (0 is valid).
 
 #endif
