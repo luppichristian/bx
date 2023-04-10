@@ -750,8 +750,24 @@ u8 most_significant_bit(u64 mask) {
 #endif
 }
 
+b8x is_unilateral(f32 x) {
+     return in_range(x, 0.0f, 1.0f);
+}
+
+b8x is_unilateral(f64 x) {
+     return in_range(x, 0.0, 1.0);
+}
+
+b8x is_bilateral(f32 x) {
+     return in_range(x, -1.0f, 1.0f);
+}
+
+b8x is_bilateral(f64 x) {
+     return in_range(x, -1.0, 1.0);
+}
+
 s32 fact(s32 x) {
-     return (x <= 0) ? (x) : (x * fact(x - 1));
+     return (x <= 0) ? (1) : (x * fact(x - 1));
 }
 
 f32 abs(f32 x) {
@@ -772,6 +788,15 @@ f32 sqrt(f32 _x) {
      }
      
      return x;
+}
+
+f32 nearby(f32 x) {
+     x += (x > 0.0f) ? (0.5f): (-0.5f);
+     return (f32)((s32)x);
+}
+
+f32 round(f32 x) {
+     return (f32)((s32)(x+0.5f));
 }
 
 f32 rsqrt(f32 x) {
@@ -812,28 +837,41 @@ f32 cos(f32 x) {
      return res;
 }
 
-f32 tan(f32 x) {
-     f32 sin_x = x - x*x*x/6 + x*x*x*x*x/120 - x*x*x*x*x*x*x/5040;
-     f32 cos_x = 1 - x*x/2 + x*x*x*x/24 - x*x*x*x*x*x/720;
-     return sin_x / cos_x;
-}
-
 f32 pow(f32 base, s32 exp) {
-     f32 res = 1.0f;
      if(exp < 0) {
           assert(base);
-          res = 1.0f / (base * pow(base, (-exp) - 1));
+          return 1 / (base * pow(base, (-exp) - 1));
+     } else if(exp == 0) {
+          return 1;
      } else if(exp == 1) {
-          res = base;
-     } else if(exp > 1) {
-          res = base * pow(base, exp - 1);
+          return base;
      }
      
-     return res;
+     return base * pow(base, exp - 1);
+}
+
+f32 sign(f32 x) {
+     return x > 0.0f ? 1.0f : -1.0f;
 }
 
 f32 io0(f32 x) {
      return (x != 0.0f) ? 1.0f / x : 0.0f;
+}
+
+f32 so0(f32 x) {
+     return bias_compare(x, 0.0f) ? 0.0f : sign(x);
+}
+
+f32 distance(f32 x, f32 y) {
+     return abs(y - x);
+}
+
+f32 square(f32 x) {
+     return x*x;
+}
+
+f32 cube(f32 x) {
+     return x*x*x;
 }
 
 b8x bias_compare(f32 x, f32 y, f32 bias) {
@@ -862,4 +900,203 @@ f32 deg_to_rad(f32 deg) {
 
 f32 rad_to_deg(f32 rad) {
      return rad * (180.0f / PI32);
+}
+
+f32 round_to_multiple(f32 x, f32 multiple) {
+     return round(x / multiple) * multiple;
+}
+
+v2 V2(void) {
+     return {};
+}
+
+v2 V2(f32 a) {
+     return {a, a};
+}
+
+v2 V2(f32 a, f32 b) {
+     return {a,b};
+}
+
+v2 operator+(v2 a, v2 b) {
+     return {a.x+b.x, a.y+b.y};
+}
+
+v2 operator-(v2 a, v2 b) {
+     return {a.x-b.x, a.y-b.y};
+}
+
+v2 operator*(v2 a, v2 b) {
+     return {a.x*b.x, a.y*b.y};
+}
+
+v2 operator/(v2 a, v2 b) {
+     return {a.x/b.x, a.y/b.y};
+}
+
+v2 operator+(v2 a, f32 b) {
+     return a + V2(b);
+}
+
+v2 operator-(v2 a, f32 b) {
+     return a - V2(b);
+}
+
+v2 operator*(v2 a, f32 b) {
+     return a * V2(b);
+}
+
+v2 operator/(v2 a, f32 b) {
+     return a / V2(b);
+}
+
+v2 operator+(f32 a, v2 b) {
+     return V2(a) + b;
+}
+
+v2 operator-(f32 a, v2 b) {
+     return V2(a) - b;
+}
+
+v2 operator*(f32 a, v2 b) {
+     return V2(a) * b;
+}
+
+v2 operator/(f32 a, v2 b) {
+     return V2(a) / b;
+}
+
+v2 operator+=(v2& a, v2 b) {
+     return a = a + b;
+}
+
+v2 operator-=(v2& a, v2 b) {
+     return a = a - b;
+}
+
+v2 operator*=(v2& a, v2 b) {
+     return a = a * b;
+}
+
+v2 operator/=(v2& a, v2 b) {
+     return a = a / b;
+}
+
+v2 operator+=(v2& a, f32 b) {
+     return a = a + b;
+}
+
+v2 operator-=(v2& a, f32 b) {
+     return a = a - b;
+}
+
+v2 operator*=(v2& a, f32 b) {
+     return a = a * b;
+}
+
+v2 operator/=(v2& a, f32 b) {
+     return a = a / b;
+}
+
+b8x operator>(v2 a, v2 b) {
+     return (a.x>b.x)&& (a.y>b.y);
+}
+
+b8x operator<(v2 a, v2 b) {
+     return (a.x<b.x)&& (a.y<b.y);
+}
+
+b8x operator>=(v2 a, v2 b) {
+     return (a.x>=b.x)&& (a.y>=b.y);
+}
+
+b8x operator<=(v2 a, v2 b) {
+     return (a.x<=b.x)&& (a.y<=b.y);
+}
+
+v2 operator+(v2 a) {
+     return {+a.x, +a.y};
+}
+
+v2 operator-(v2 a) {
+     return {-a.x, -a.y};
+}
+
+f32 inner(v2 a, v2 b) {
+     return a.x*b.x + a.y*b.y;
+}
+
+f32 lensq(v2 x) {
+     return inner(x, x);
+}
+
+f32 len(v2 x) {
+     return sqrt(lensq(x));
+}
+
+f32 distancesq(v2 a, v2 b) {
+     return square(a.x-b.x) + square(a.y-b.y);
+}
+
+f32 distance(v2 a, v2 b) {
+     return sqrt(distancesq(a, b));
+}
+
+v2 round_to_multiple(v2 x, f32 multiple) {
+     return {round_to_multiple(x.x, multiple), round_to_multiple(x.y, multiple)};
+}
+
+v2 normalize(v2 x) {
+     f32 l = len(x);
+     return x * io0(l);
+}
+
+v2 abs(v2 x) {
+     return {abs(x.x), abs(x.y)};
+}
+
+v2 perp(v2 x) {
+     return {-x.y, x.x};
+}
+
+v2 sqrt(v2 x) {
+     return {sqrt(x.x), sqrt(x.y)};
+}
+
+v2 lerp(v2 a, v2 b, v2 t) {
+     return {lerp(a.x, b.x, t.x), lerp(a.y, b.y, t.y)};
+}
+
+v2 lerp(v2 a, v2 b, f32 t) {
+     return lerp(a, b, V2(t));
+}
+
+v2 unilateral_to_bilateral(v2 x) {
+     return {unilateral_to_bilateral(x.x), unilateral_to_bilateral(x.y)};
+}
+
+v2 bilateral_to_unilateral(v2 x) {
+     return {bilateral_to_unilateral(x.x), bilateral_to_unilateral(x.y)};
+}
+
+v2 min2(v2 a, v2 b) {
+     return{min(a.x, b.x), min(a.y, b.y)};
+}
+
+v2 max2(v2 a, v2 b) {
+     return{max(a.x, b.x), max(a.y, b.y)};
+}
+
+v2 clamp2(v2 x, v2 minimum, v2 maximum) {
+     return{clamp(x.x, minimum.x, maximum.x), clamp(x.y, minimum.y, maximum.y)};
+}
+
+v2 rotate(v2 v, f32 angle) {
+     f32 s = sin(angle);
+     f32 c = cos(angle);
+     return V2(v.x * c - v.y * s, v.x * s + v.y * c);
+}
+
+v2 nearby(v2 x) {
+     return {nearby(x.x), nearby(x.y)};
 }

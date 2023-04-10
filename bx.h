@@ -518,18 +518,28 @@ u8 most_significant_bit(u64 mask);  // Returns the bit index (0 is valid).
 #define E32 2.71828182845904523536f
 
 // Basic math operations.
+b8x is_unilateral(f32 x);
+b8x is_unilateral(f64 x);
+b8x is_bilateral(f32 x);
+b8x is_bilateral(f64 x);
 s32 fact(s32 x);
 f32 abs(f32 x);
 s32 abs(s32 x);
 f32 sqrt(f32 x);
+f32 nearby(f32 x);
+f32 round(f32 x);
 f32 rsqrt(f32 x);
 f32 floor(f32 x);
 f32 ceil(f32 x);
 f32 sin(f32 x);
 f32 cos(f32 x);
-f32 tan(f32 x);
 f32 pow(f32 base, s32 exp);
+f32 sign(f32 x);
 f32 io0(f32 x); // Inverse or 0.
+f32 so0(f32 x); // Sign or 0.
+f32 distance(f32 x, f32 y);
+f32 square(f32 x);
+f32 cube(f32 x);
 b8x bias_compare(f32 x, f32 y, f32 bias = EPSILON32);
 b8x bias_in_range(f32 x, f32 minimum, f32 maximum, f32 bias = EPSILON32);
 f32 bilateral_to_unilateral(f32 bilateral);
@@ -537,8 +547,74 @@ f32 unilateral_to_bilateral(f32 unilateral);
 f32 lerp(f32 a, f32 b, f32 t);
 f32 deg_to_rad(f32 deg);
 f32 rad_to_deg(f32 rad);
+f32 round_to_multiple(f32 x, f32 multiple);
 
 // *********
 // *********
+
+// 2D vector.
+struct v2 {
+     union {
+          f32 e[2];
+          struct { f32 x, y; }; 
+          struct { f32 u, v; }; 
+          struct { f32 r, g; }; 
+          struct { f32 a, b; }; 
+     };
+};
+
+// 2D vector constructors.
+v2 V2(void);
+v2 V2(f32 a);
+v2 V2(f32 a, f32 b);
+
+// 2D vector operators.
+v2 operator+(v2 a, v2 b);
+v2 operator-(v2 a, v2 b);
+v2 operator*(v2 a, v2 b);
+v2 operator/(v2 a, v2 b);
+v2 operator+(v2 a, f32 b);
+v2 operator-(v2 a, f32 b);
+v2 operator*(v2 a, f32 b);
+v2 operator/(v2 a, f32 b);
+v2 operator+(f32 a, v2 b);
+v2 operator-(f32 a, v2 b);
+v2 operator*(f32 a, v2 b);
+v2 operator/(f32 a, v2 b);
+v2 operator+=(v2& a, v2 b);
+v2 operator-=(v2& a, v2 b);
+v2 operator*=(v2& a, v2 b);
+v2 operator/=(v2& a, v2 b);
+v2 operator+=(v2& a, f32 b);
+v2 operator-=(v2& a, f32 b);
+v2 operator*=(v2& a, f32 b);
+v2 operator/=(v2& a, f32 b);
+b8x operator>(v2 a, v2 b);
+b8x operator<(v2 a, v2 b);
+b8x operator>=(v2 a, v2 b);
+b8x operator<=(v2 a, v2 b);
+v2 operator+(v2 a);
+v2 operator-(v2 a);
+
+// 2D vector operations.
+f32 inner(v2 a, v2 b);
+f32 lensq(v2 x);
+f32 len(v2 x);
+f32 distancesq(v2 a, v2 b);
+f32 distance(v2 a, v2 b);
+v2 round_to_multiple(v2 x, f32 multiple);
+v2 normalize(v2 x);
+v2 abs(v2 x);
+v2 perp(v2 x);
+v2 sqrt(v2 x);
+v2 lerp(v2 a, v2 b, v2 t);
+v2 lerp(v2 a, v2 b, f32 t);
+v2 unilateral_to_bilateral(v2 x);
+v2 bilateral_to_unilateral(v2 x);
+v2 min2(v2 a, v2 b);
+v2 max2(v2 a, v2 b);
+v2 clamp2(v2 x, v2 minimum, v2 maximum);
+v2 rotate(v2 x, f32 angle);
+v2 nearby(v2 x);
 
 #endif
