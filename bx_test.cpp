@@ -5,13 +5,9 @@
 #include <stdio.h>
 
 entry_point int main(int argc, char** argv) {
-     rng rand = {};
-     seed(&rand, 1234);
      
-     repeat(32) {
-          f64 i = range_f64(&rand, -5.0f, 5.0f);
-          printf("%lf\n", i);
-     }
+     f32 a = -32.0f;
+     f32 b = abs(a);
      
      return 0;
 }

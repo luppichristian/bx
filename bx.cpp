@@ -34,6 +34,21 @@ f64 f64_from_u64(u64 x) {
      return *((f64*)(&x));
 }
 
+u8 safe_u16_to_u8(u16 x) {
+     assert(x <= U8_MAX);
+     return (u8)x;
+}
+
+u16 safe_u32_to_u16(u32 x) {
+     assert(x <= U16_MAX);
+     return (u16)x;
+}
+
+u32 safe_u64_to_u64(u64 x) {
+     assert(x <= U32_MAX);
+     return (u32)x;
+}
+
 void* copy(void* dst, void* src, sz size) {
      for(sz i = 0; i < size; ++i) ((u8*)dst)[i] = ((u8*)src)[i];
      return dst;
@@ -733,4 +748,118 @@ u8 most_significant_bit(u64 mask) {
      }
      return index;
 #endif
+}
+
+s32 fact(s32 x) {
+     return (x <= 0) ? (x) : (x * fact(x - 1));
+}
+
+f32 abs(f32 x) {
+     u32 val = f32_to_u32(x);
+     return f32_from_u32(val & 0x7FFFFFFF);
+}
+
+s32 abs(s32 x) {
+     return (x + (x >> 31)) ^ (x >> 31);
+}
+
+f32 sqrt(f32 _x) {
+     f32 x = _x;
+     f32 y = 1;
+     while(x - y > EPSILON32) {
+          x = (x + y) / 2;
+          y = _x / x;
+     }
+     
+     return x;
+}
+
+f32 rsqrt(f32 x) {
+     f32 xhalf = 0.5f * x;
+     u32 i = f32_to_u32(x);
+     i = 0x5f3759df - (i >> 1);
+     x = f32_from_u32(i);
+     x = x * (1.5f - xhalf * x * x);
+     return x;
+}
+
+f32 floor(f32 x) {
+     return (f32)((s32)x);
+}
+
+f32 ceil(f32 x) {
+     s32 i = (s32) x;
+     f32 r = (f32) i;
+     r += (f32) (x > r);
+     return r;
+}
+
+f32 sin(f32 x) {
+     f32 res = 0.0f;
+     for(u32 i = 0; i < 8; i++)  { 
+          res += pow(-1, i) * pow(x, 2 * i + 1) / fact(2 * i + 1);
+     }
+     
+     return res;
+}
+
+f32 cos(f32 x) {
+     f32 res = 0.0f;
+     for(u32 i = 0; i < 8; i++)  { 
+          res += pow(-1, i) * pow(x, 2 * i) / fact(2 * i);
+     }
+     
+     return res;
+}
+
+f32 tan(f32 x) {
+     f32 sin_x = x - x*x*x/6 + x*x*x*x*x/120 - x*x*x*x*x*x*x/5040;
+     f32 cos_x = 1 - x*x/2 + x*x*x*x/24 - x*x*x*x*x*x/720;
+     return sin_x / cos_x;
+}
+
+f32 pow(f32 base, s32 exp) {
+     f32 res = 1.0f;
+     if(exp < 0) {
+          assert(base);
+          res = 1.0f / (base * pow(base, (-exp) - 1));
+     } else if(exp == 1) {
+          res = base;
+     } else if(exp > 1) {
+          res = base * pow(base, exp - 1);
+     }
+     
+     return res;
+}
+
+f32 io0(f32 x) {
+     return (x != 0.0f) ? 1.0f / x : 0.0f;
+}
+
+b8x bias_compare(f32 x, f32 y, f32 bias) {
+     return abs(x - y) <= bias;
+}
+
+b8x bias_in_range(f32 x, f32 minimum, f32 maximum, f32 bias) {
+     return (x >= (minimum - bias)) && (x <= (maximum + bias));
+}
+
+f32 bilateral_to_unilateral(f32 bilateral) {
+     return bilateral * 0.5f + 0.5f;
+}
+
+f32 unilateral_to_bilateral(f32 unilateral) {
+     return unilateral * 2.0f - 1.0f;
+}
+
+f32 lerp(f32 a, f32 b, f32 t) {
+     return (1.0f - t)*a + t*b;
+}
+
+f32 deg_to_rad(f32 deg) {
+     return deg * (PI32 / 180.0f);
+}
+
+f32 rad_to_deg(f32 rad) {
+     return rad * (180.0f / PI32);
 }

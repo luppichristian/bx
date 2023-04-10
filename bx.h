@@ -350,6 +350,11 @@ u64 f64_to_u64(f64 x);
 f32 f32_from_u32(u32 x);
 f64 f64_from_u64(u64 x);
 
+// Safe integer conversions.
+u8  safe_u16_to_u8(u16 x);
+u16 safe_u32_to_u16(u32 x);
+u32 safe_u64_to_u64(u64 x);
+
 // *********
 // *********
 
@@ -502,5 +507,38 @@ u8 least_significant_bit(u32 mask); // Returns the bit index (0 is valid).
 u8 most_significant_bit(u32 mask);  // Returns the bit index (0 is valid).
 u8 least_significant_bit(u64 mask);  // Returns the bit index (0 is valid).
 u8 most_significant_bit(u64 mask);  // Returns the bit index (0 is valid).
+
+// *********
+// *********
+
+// Math constants.
+#define EPSILON32 0.00001f
+#define PI32 3.141592653589793f
+#define TAU32 6.28318530717958647692f
+#define E32 2.71828182845904523536f
+
+// Basic math operations.
+s32 fact(s32 x);
+f32 abs(f32 x);
+s32 abs(s32 x);
+f32 sqrt(f32 x);
+f32 rsqrt(f32 x);
+f32 floor(f32 x);
+f32 ceil(f32 x);
+f32 sin(f32 x);
+f32 cos(f32 x);
+f32 tan(f32 x);
+f32 pow(f32 base, s32 exp);
+f32 io0(f32 x); // Inverse or 0.
+b8x bias_compare(f32 x, f32 y, f32 bias = EPSILON32);
+b8x bias_in_range(f32 x, f32 minimum, f32 maximum, f32 bias = EPSILON32);
+f32 bilateral_to_unilateral(f32 bilateral);
+f32 unilateral_to_bilateral(f32 unilateral);
+f32 lerp(f32 a, f32 b, f32 t);
+f32 deg_to_rad(f32 deg);
+f32 rad_to_deg(f32 rad);
+
+// *********
+// *********
 
 #endif
