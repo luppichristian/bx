@@ -616,5 +616,80 @@ v2 max2(v2 a, v2 b);
 v2 clamp2(v2 x, v2 minimum, v2 maximum);
 v2 rotate(v2 x, f32 angle);
 v2 nearby(v2 x);
+v2 round(v2 x);
+
+// *********
+// *********
+
+// 3D vector.
+struct v3 {
+     union {
+          f32 e[3];
+          struct { f32 x, y, z; }; 
+          struct { f32 r, g, b; }; 
+          struct { f32 a, b, c; };
+          struct { v2 xy; f32 _z; };
+          struct { f32 _x; v2 yz; };
+     };
+};
+
+// 3D vector constructors.
+v3 V3(void);
+v3 V3(f32 x);
+v3 V3(f32 x, f32 y, f32 z);
+v3 V3(v2 xy, f32 z);
+v3 V3(f32 x, v2 yz);
+
+// 3D vector operators.
+v3 operator+(v3 a, v3 b);
+v3 operator-(v3 a, v3 b);
+v3 operator*(v3 a, v3 b);
+v3 operator/(v3 a, v3 b);
+v3 operator+(v3 a, f32 b);
+v3 operator-(v3 a, f32 b);
+v3 operator*(v3 a, f32 b);
+v3 operator/(v3 a, f32 b);
+v3 operator+(f32 a, v3 b);
+v3 operator-(f32 a, v3 b);
+v3 operator*(f32 a, v3 b);
+v3 operator/(f32 a, v3 b);
+v3 operator+=(v3& a, v3 b);
+v3 operator-=(v3& a, v3 b);
+v3 operator*=(v3& a, v3 b);
+v3 operator/=(v3& a, v3 b);
+v3 operator+=(v3& a, f32 b);
+v3 operator-=(v3& a, f32 b);
+v3 operator*=(v3& a, f32 b);
+v3 operator/=(v3& a, f32 b);
+b8x operator>(v3 a, v3 b);
+b8x operator<(v3 a, v3 b);
+b8x operator>=(v3 a, v3 b);
+b8x operator<=(v3 a, v3 b);
+v3 operator+(v3 a);
+v3 operator-(v3 a);
+
+// 3D vector operations.
+v3 cross(v3 a, v3 b);
+f32 inner(v3 a, v3 b);
+f32 lensq(v3 x);
+f32 len(v3 x);
+f32 distancesq(v3 a, v3 b);
+f32 distance(v3 a, v3 b);
+v3 round_to_multiple(v3 x, f32 multiple);
+v3 normalize(v3 x);
+v3 abs(v3 x);
+v3 sqrt(v3 x);
+v3 lerp(v3 a, v3 b, v3 t);
+v3 lerp(v3 a, v3 b, f32 t);
+v3 unilateral_to_bilateral(v3 x);
+v3 bilateral_to_unilateral(v3 x);
+v3 min2(v3 a, v3 b);
+v3 max2(v3 a, v3 b);
+v3 clamp2(v3 x, v3 minimum, v3 maximum);
+v3 nearby(v3 x);
+v3 round(v3 x);
+
+// *********
+// *********
 
 #endif

@@ -1100,3 +1100,204 @@ v2 rotate(v2 v, f32 angle) {
 v2 nearby(v2 x) {
      return {nearby(x.x), nearby(x.y)};
 }
+
+v2 round(v2 x) {
+     return {round(x.x), round(x.y)};
+}
+
+v3 V3(void) {
+     return {};
+}
+
+v3 V3(f32 x) {
+     return {x,x,x};
+}
+
+v3 V3(f32 x, f32 y, f32 z) {
+     return {x,y,z};
+}
+
+v3 V3(v2 xy, f32 z) {
+     return {xy.x, xy.y, z};
+}
+
+v3 V3(f32 x, v2 yz) {
+     return {x, yz.x, yz.y};
+}
+
+v3 operator+(v3 a, v3 b) {
+     return {a.x+b.x, a.y+b.y, a.z+b.z};
+}
+
+v3 operator-(v3 a, v3 b) {
+     return {a.x-b.x, a.y-b.y, a.z-b.z};
+}
+
+v3 operator*(v3 a, v3 b) {
+     return {a.x*b.x, a.y*b.y, a.z*b.z};
+}
+
+v3 operator/(v3 a, v3 b) {
+     return {a.x/b.x, a.y/b.y, a.z/b.z};
+}
+
+v3 operator+(v3 a, f32 b) {
+     return a + V3(b);
+}
+
+v3 operator-(v3 a, f32 b) {
+     return a - V3(b);
+}
+
+v3 operator*(v3 a, f32 b) {
+     return a * V3(b);
+}
+
+v3 operator/(v3 a, f32 b) {
+     return a / V3(b);
+}
+
+v3 operator+(f32 a, v3 b) {
+     return V3(a) + b;
+}
+
+v3 operator-(f32 a, v3 b) {
+     return V3(a) - b;
+}
+
+v3 operator*(f32 a, v3 b) {
+     return V3(a) * b;
+}
+
+v3 operator/(f32 a, v3 b) {
+     return V3(a) / b;
+}
+
+v3 operator+=(v3& a, v3 b) {
+     return a = a + b;
+}
+
+v3 operator-=(v3& a, v3 b) {
+     return a = a - b;
+}
+
+v3 operator*=(v3& a, v3 b) {
+     return a = a * b;
+}
+
+v3 operator/=(v3& a, v3 b) {
+     return a = a / b;
+}
+
+v3 operator+=(v3& a, f32 b) {
+     return a = a + b;
+}
+
+v3 operator-=(v3& a, f32 b) {
+     return a = a - b;
+}
+
+v3 operator*=(v3& a, f32 b) {
+     return a = a * b;
+}
+
+v3 operator/=(v3& a, f32 b) {
+     return a = a / b;
+}
+
+b8x operator>(v3 a, v3 b) {
+     return (a.x>b.x)&& (a.y>b.y) && (a.z>b.z);
+}
+
+b8x operator<(v3 a, v3 b) {
+     return (a.x<b.x)&& (a.y<b.y) && (a.z<b.z);
+}
+
+b8x operator>=(v3 a, v3 b) {
+     return (a.x>=b.x)&& (a.y>=b.y) && (a.z>=b.z);
+}
+
+b8x operator<=(v3 a, v3 b) {
+     return (a.x<=b.x)&& (a.y<=b.y) && (a.z<=b.z);
+}
+
+v3 operator+(v3 a) {
+     return {+a.x, +a.y, +a.z};
+}
+
+v3 operator-(v3 a) {
+     return {-a.x, -a.y, -a.z};
+}
+
+f32 inner(v3 a, v3 b) {
+     return a.x*b.x + a.y*b.y + a.z*b.z;
+}
+
+f32 lensq(v3 x) {
+     return inner(x, x);
+}
+
+f32 len(v3 x) {
+     return sqrt(lensq(x));
+}
+
+f32 distancesq(v3 a, v3 b) {
+     return square(a.x-b.x) + square(a.y-b.y) + square(a.z-b.z);
+}
+
+f32 distance(v3 a, v3 b) {
+     return sqrt(distancesq(a, b));
+}
+
+v3 round_to_multiple(v3 x, f32 multiple) {
+     return {round_to_multiple(x.x, multiple), round_to_multiple(x.y, multiple), round_to_multiple(x.z, multiple)};
+}
+
+v3 normalize(v3 x) {
+     f32 l = len(x);
+     return x * io0(l);
+}
+
+v3 abs(v3 x) {
+     return {abs(x.x), abs(x.y), abs(x.z)};
+}
+
+v3 sqrt(v3 x) {
+     return {sqrt(x.x), sqrt(x.y)};
+}
+
+v3 lerp(v3 a, v3 b, v3 t) {
+     return {lerp(a.x, b.x, t.x), lerp(a.y, b.y, t.y), lerp(a.z, b.z, t.z)};
+}
+
+v3 lerp(v3 a, v3 b, f32 t) {
+     return lerp(a, b, V3(t));
+}
+
+v3 unilateral_to_bilateral(v3 x) {
+     return {unilateral_to_bilateral(x.x), unilateral_to_bilateral(x.y), unilateral_to_bilateral(x.z)};
+}
+
+v3 bilateral_to_unilateral(v3 x) {
+     return {bilateral_to_unilateral(x.x), bilateral_to_unilateral(x.y), bilateral_to_unilateral(x.z)};
+}
+
+v3 min2(v3 a, v3 b) {
+     return{min(a.x, b.x), min(a.y, b.y), min(a.z, b.z)};
+}
+
+v3 max2(v3 a, v3 b) {
+     return{max(a.x, b.x), max(a.y, b.y), max(a.z, b.z)};
+}
+
+v3 clamp2(v3 x, v3 minimum, v3 maximum) {
+     return{clamp(x.x, minimum.x, maximum.x), clamp(x.y, minimum.y, maximum.y), clamp(x.z, minimum.z, maximum.z)};
+}
+
+v3 nearby(v3 x) {
+     return {nearby(x.x), nearby(x.y), nearby(x.z)};
+}
+
+v3 round(v3 x) {
+     return {round(x.x), round(x.y), round(x.z)};
+}
