@@ -14,6 +14,22 @@
 #error Missing header!
 #endif
 
+u32 f32_to_u32(f32 x) {
+     return *((u32*)(&x));
+}
+
+u64 f64_to_u64(f64 x) {
+     return *((u64*)(&x));
+}
+
+f32 f32_from_u32(u32 x) {
+     return *((f32*)(&x));
+}
+
+f64 f64_from_u64(u64 x) {
+     return *((f64*)(&x));
+}
+
 void* copy(void* dst, void* src, sz size) {
      for(sz i = 0; i < size; ++i) ((u8*)dst)[i] = ((u8*)src)[i];
      return dst;
@@ -350,9 +366,9 @@ void sort_radix(sort_entry* entries, u32 count) {
                
                u32 total = 0;
                for(u32 i = 0; i < countof(offsets); ++i) {
-                    u32 Count = offsets[i];
+                    u32 count = offsets[i];
                     offsets[i] = total;
-                    total += Count;
+                    total += count;
                }
                
                for(u32 i = 0; i < count; ++i) {
@@ -363,4 +379,86 @@ void sort_radix(sort_entry* entries, u32 count) {
                swap(dst, src);
           }
      }
+}
+
+void seed(rng* rn, u32 seed) {
+     rn->seed = seed;
+     clear(rn);
+}
+
+void clear(rng* rn) {
+     rn->state = rn->seed;
+}
+
+u32 next_u32(rng* rn) {
+     rn->state ^= rn->state << 13;
+     rn->state ^= rn->state >> 17;
+     rn->state ^= rn->state << 5;
+     return rn->state;
+}
+
+u64 next_u64(rng* rn) {
+     u32 a = next_u32(rn);
+     u32 b = next_u32(rn);
+     return pack_u64_x2(a, b);
+}
+
+s32 next_s32(rng* rn) {
+     return (s32)next_u32(rn);
+}
+
+s64 next_s64(rng* rn) {
+     return (s64)next_u64(rn);
+}
+
+f32 next_f32(rng* rn) {
+     return bilateral_f32(rn) * F32_MAX;
+}
+
+f64 next_f64(rng* rn) {
+     return bilateral_f64(rn) * F64_MAX;
+}
+
+u32 range_u32(rng* rn, u32 minimum, u32 maximum) {
+     return (next_u32(rn) % ((maximum + 1) - minimum)) + minimum;
+}
+
+u64 range_u64(rng* rn, u64 minimum, u64 maximum) {
+     return (next_u64(rn) % ((maximum + 1) - minimum)) + minimum;
+}
+
+s32 range_s32(rng* rn, s32 minimum, s32 maximum) {
+     return s32(next_u32(rn) % ((maximum + 1) - minimum)) + minimum;
+}
+
+s64 range_s64(rng* rn, s64 minimum, s64 maximum) {
+     return s64(next_u32(rn) % ((maximum + 1) - minimum)) + minimum;
+}
+
+f32 range_f32(rng* rn, f32 minimum, f32 maximum) {
+     return minimum + (unilateral_f32(rn) * (maximum - minimum));
+}
+
+f64 range_f64(rng* rn, f64 minimum, f64 maximum) {
+     return minimum + (unilateral_f64(rn) * (maximum - minimum));
+}
+
+b8x chance(rng* rn, u32 chance) {
+     return (next_u32(rn) % chance) == 0;
+}
+
+f32 unilateral_f32(rng* rn) {
+     return next_u32(rn) / (f32)U32_MAX;
+}
+
+f32 bilateral_f32(rng* rn) {
+     return unilateral_f32(rn) * 2.0f - 1.0f;
+}
+
+f64 unilateral_f64(rng* rn) {
+     return next_u64(rn) / (f64)U64_MAX;
+}
+
+f64 bilateral_f64(rng* rn) {
+     return unilateral_f64(rn) * 2.0f - 1.0f;
 }

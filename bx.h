@@ -341,6 +341,17 @@ typedef s64x b64x;
 
 // *********
 
+// Integer packing.
+#define pack_u64_x2(a, b) ((u64(b) << 32) | u64(a))
+
+// Floating point to integer conversion without casting.
+u32 f32_to_u32(f32 x);
+u64 f64_to_u64(f64 x);
+f32 f32_from_u32(u32 x);
+f64 f64_from_u64(u64 x);
+
+// *********
+
 // Basic memory ops.
 void* copy(void* dst, void* src, sz size);
 void* set8(void* dst, u8 byte, sz count);
@@ -379,5 +390,41 @@ b8x are_sorted(sort_entry* entries, u32 count);
 void sort_bubble(sort_entry* entries, u32 count);
 void sort_quick(sort_entry* entries, u32 count);
 void sort_radix(sort_entry* entries, u32 count);
+
+// *********
+
+struct rng {
+     u32 seed;
+     u32 state;
+};
+
+// Random Number Generation.
+void seed(rng* rn, u32 seed);
+void clear(rng* rn); // Reset state to seed.
+
+// Absolute values.
+u32 next_u32(rng* rn);
+u64 next_u64(rng* rn);
+s32 next_s32(rng* rn);
+s64 next_s64(rng* rn);
+f32 next_f32(rng* rn);
+f64 next_f64(rng* rn);
+
+// Range values.
+u32 range_u32(rng* rn, u32 minimum, u32 maximum); // Min and max are inclusive.
+u64 range_u64(rng* rn, u64 minimum, u64 maximum); // Min and max are inclusive.
+s32 range_s32(rng* rn, s32 minimum, s32 maximum); // Min and max are inclusive.
+s64 range_s64(rng* rn, s64 minimum, s64 maximum); // Min and max are inclusive.
+f32 range_f32(rng* rn, f32 minimum, f32 maximum); // Min and max are inclusive.
+f64 range_f64(rng* rn, f64 minimum, f64 maximum); // Min and max are inclusive.
+
+// Chance.
+b8x chance(rng* rn, u32 chance);
+
+// Floats.
+f32 unilateral_f32(rng* rn); // Values between 0 and 1.
+f32 bilateral_f32(rng* rn); // Values between -1 and 1.
+f64 unilateral_f64(rng* rn); // Values between 0 and 1.
+f64 bilateral_f64(rng* rn); // Values between -1 and 1.
 
 #endif
