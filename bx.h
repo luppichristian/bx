@@ -561,9 +561,9 @@ struct v2 {
 };
 
 // 2D vector constructors.
-v2 V2(void);
-v2 V2(f32 a);
-v2 V2(f32 a, f32 b);
+v2 mk_v2(void);
+v2 mk_v2(f32 a);
+v2 mk_v2(f32 a, f32 b);
 
 // 2D vector operators.
 v2 operator+(v2 a, v2 b);
@@ -614,6 +614,7 @@ v2 clamp2(v2 x, v2 minimum, v2 maximum);
 v2 rotate(v2 x, f32 angle);
 v2 nearby(v2 x);
 v2 round(v2 x);
+v2 transpose(v2 x);
 
 // *********
 // *********
@@ -629,11 +630,11 @@ struct v3 {
 };
 
 // 3D vector constructors.
-v3 V3(void);
-v3 V3(f32 x);
-v3 V3(f32 x, f32 y, f32 z);
-v3 V3(v2 xy, f32 z);
-v3 V3(f32 x, v2 yz);
+v3 mk_v3(void);
+v3 mk_v3(f32 x);
+v3 mk_v3(f32 x, f32 y, f32 z);
+v3 mk_v3(v2 xy, f32 z);
+v3 mk_v3(f32 x, v2 yz);
 
 // 3D vector operators.
 v3 operator+(v3 a, v3 b);
@@ -683,6 +684,7 @@ v3 max2(v3 a, v3 b);
 v3 clamp2(v3 x, v3 minimum, v3 maximum);
 v3 nearby(v3 x);
 v3 round(v3 x);
+v3 transpose(v3 x);
 
 // *********
 // *********
@@ -700,13 +702,13 @@ struct v4 {
 };
 
 // 4D vector constructors.
-v4 V4(void);
-v4 V4(f32 x);
-v4 V4(f32 x, f32 y, f32 z, f32 w);
-v4 V4(v2 xy, v2 zw);
-v4 V4(f32 x, v2 yz, f32 w);
-v4 V4(v3 xyz, f32 w);
-v4 V4(f32 x, v3 yzw);
+v4 mk_v4(void);
+v4 mk_v4(f32 x);
+v4 mk_v4(f32 x, f32 y, f32 z, f32 w);
+v4 mk_v4(v2 xy, v2 zw);
+v4 mk_v4(f32 x, v2 yz, f32 w);
+v4 mk_v4(v3 xyz, f32 w);
+v4 mk_v4(f32 x, v3 yzw);
 
 // 4D vector operators.
 v4 operator+(v4 a, v4 b);
@@ -755,5 +757,73 @@ v4 max2(v4 a, v4 b);
 v4 clamp2(v4 x, v4 minimum, v4 maximum);
 v4 nearby(v4 x);
 v4 round(v4 x);
+v4 transpose(v4 x);
+
+// *********
+// *********
+
+// Range2.
+struct r2 {
+     v2 a;
+     v2 b;
+};
+
+// Range2 constructors.
+r2 mk_r2(void);
+r2 mk_r2(v2 a, v2 b);
+r2 mk_r2_center_dim(v2 a, v2 b);
+r2 mk_r2_center_hdim(v2 a, v2 b);
+r2 mk_r2_min_dim(v2 a, v2 b);
+r2 mk_r2_min_hdim(v2 a, v2 b);
+r2 mk_r2_max_dim(v2 a, v2 b);
+r2 mk_r2_max_hdim(v2 a, v2 b);
+r2 mk_r2_top_left_dim(v2 a, v2 b);
+r2 mk_r2_top_left_hdim(v2 a, v2 b);
+r2 mk_r2_bottom_right_dim(v2 a, v2 b);
+r2 mk_r2_bottom_right_hdim(v2 a, v2 b);
+
+// Range2 operators.
+r2 operator+(r2 a, r2 b);
+r2 operator-(r2 a, r2 b);
+r2 operator*(r2 a, r2 b);
+r2 operator/(r2 a, r2 b);
+r2 operator+(r2 a, f32 b);
+r2 operator-(r2 a, f32 b);
+r2 operator*(r2 a, f32 b);
+r2 operator/(r2 a, f32 b);
+r2 operator+(f32 a, r2 b);
+r2 operator-(f32 a, r2 b);
+r2 operator*(f32 a, r2 b);
+r2 operator/(f32 a, r2 b);
+r2 operator+=(r2& a, r2 b);
+r2 operator-=(r2& a, r2 b);
+r2 operator*=(r2& a, r2 b);
+r2 operator/=(r2& a, r2 b);
+r2 operator+=(r2& a, f32 b);
+r2 operator-=(r2& a, f32 b);
+r2 operator*=(r2& a, f32 b);
+r2 operator/=(r2& a, f32 b);
+b8x operator>(r2 a, r2 b);
+b8x operator<(r2 a, r2 b);
+b8x operator>=(r2 a, r2 b);
+b8x operator<=(r2 a, r2 b);
+r2 operator+(r2 a);
+r2 operator-(r2 a);
+
+// Range2 operations.
+r2 minkowski_sum(r2 x);
+r2 rotate_by_90degs(r2 x);
+v2 center(r2 x);
+v2 dim(r2 x);
+v2 hdim(r2 x);
+v2 top_left(r2 x);
+v2 bottom_right(r2 x);
+b8x intersection(r2 a, r2 b);
+b8x intersection(r2 a, v2 b);
+b8x intersection(v2 a, r2 b);
+f32 distance(r2 a, r2 b);
+f32 distance(v2 a, r2 b);
+f32 distance(r2 a, v2 b);
+v2 closest_point(r2 a, v2 to);
 
 #endif

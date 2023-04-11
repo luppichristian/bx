@@ -906,15 +906,15 @@ f32 round_to_multiple(f32 x, f32 multiple) {
      return round(x / multiple) * multiple;
 }
 
-v2 V2(void) {
+v2 mk_v2(void) {
      return {};
 }
 
-v2 V2(f32 a) {
+v2 mk_v2(f32 a) {
      return {a, a};
 }
 
-v2 V2(f32 a, f32 b) {
+v2 mk_v2(f32 a, f32 b) {
      return {a,b};
 }
 
@@ -935,35 +935,35 @@ v2 operator/(v2 a, v2 b) {
 }
 
 v2 operator+(v2 a, f32 b) {
-     return a + V2(b);
+     return a + mk_v2(b);
 }
 
 v2 operator-(v2 a, f32 b) {
-     return a - V2(b);
+     return a - mk_v2(b);
 }
 
 v2 operator*(v2 a, f32 b) {
-     return a * V2(b);
+     return a * mk_v2(b);
 }
 
 v2 operator/(v2 a, f32 b) {
-     return a / V2(b);
+     return a / mk_v2(b);
 }
 
 v2 operator+(f32 a, v2 b) {
-     return V2(a) + b;
+     return mk_v2(a) + b;
 }
 
 v2 operator-(f32 a, v2 b) {
-     return V2(a) - b;
+     return mk_v2(a) - b;
 }
 
 v2 operator*(f32 a, v2 b) {
-     return V2(a) * b;
+     return mk_v2(a) * b;
 }
 
 v2 operator/(f32 a, v2 b) {
-     return V2(a) / b;
+     return mk_v2(a) / b;
 }
 
 v2 operator+=(v2& a, v2 b) {
@@ -1068,7 +1068,7 @@ v2 lerp(v2 a, v2 b, v2 t) {
 }
 
 v2 lerp(v2 a, v2 b, f32 t) {
-     return lerp(a, b, V2(t));
+     return lerp(a, b, mk_v2(t));
 }
 
 v2 unilateral_to_bilateral(v2 x) {
@@ -1094,7 +1094,7 @@ v2 clamp2(v2 x, v2 minimum, v2 maximum) {
 v2 rotate(v2 v, f32 angle) {
      f32 s = sin(angle);
      f32 c = cos(angle);
-     return V2(v.x * c - v.y * s, v.x * s + v.y * c);
+     return mk_v2(v.x * c - v.y * s, v.x * s + v.y * c);
 }
 
 v2 nearby(v2 x) {
@@ -1105,23 +1105,27 @@ v2 round(v2 x) {
      return {round(x.x), round(x.y)};
 }
 
-v3 V3(void) {
+v2 transpose(v2 x) {
+     return {x.y, x.x};
+}
+
+v3 mk_v3(void) {
      return {};
 }
 
-v3 V3(f32 x) {
+v3 mk_v3(f32 x) {
      return {x,x,x};
 }
 
-v3 V3(f32 x, f32 y, f32 z) {
+v3 mk_v3(f32 x, f32 y, f32 z) {
      return {x,y,z};
 }
 
-v3 V3(v2 xy, f32 z) {
+v3 mk_v3(v2 xy, f32 z) {
      return {xy.x, xy.y, z};
 }
 
-v3 V3(f32 x, v2 yz) {
+v3 mk_v3(f32 x, v2 yz) {
      return {x, yz.x, yz.y};
 }
 
@@ -1142,35 +1146,35 @@ v3 operator/(v3 a, v3 b) {
 }
 
 v3 operator+(v3 a, f32 b) {
-     return a + V3(b);
+     return a + mk_v3(b);
 }
 
 v3 operator-(v3 a, f32 b) {
-     return a - V3(b);
+     return a - mk_v3(b);
 }
 
 v3 operator*(v3 a, f32 b) {
-     return a * V3(b);
+     return a * mk_v3(b);
 }
 
 v3 operator/(v3 a, f32 b) {
-     return a / V3(b);
+     return a / mk_v3(b);
 }
 
 v3 operator+(f32 a, v3 b) {
-     return V3(a) + b;
+     return mk_v3(a) + b;
 }
 
 v3 operator-(f32 a, v3 b) {
-     return V3(a) - b;
+     return mk_v3(a) - b;
 }
 
 v3 operator*(f32 a, v3 b) {
-     return V3(a) * b;
+     return mk_v3(a) * b;
 }
 
 v3 operator/(f32 a, v3 b) {
-     return V3(a) / b;
+     return mk_v3(a) / b;
 }
 
 v3 operator+=(v3& a, v3 b) {
@@ -1279,7 +1283,7 @@ v3 lerp(v3 a, v3 b, v3 t) {
 }
 
 v3 lerp(v3 a, v3 b, f32 t) {
-     return lerp(a, b, V3(t));
+     return lerp(a, b, mk_v3(t));
 }
 
 v3 unilateral_to_bilateral(v3 x) {
@@ -1310,31 +1314,35 @@ v3 round(v3 x) {
      return {round(x.x), round(x.y), round(x.z)};
 }
 
-v4 V4(void) {
+v3 transpose(v3 x) {
+     return {x.z, x.y, x.x};
+}
+
+v4 mk4(void) {
      return {};
 }
 
-v4 V4(f32 x) {
+v4 mk4(f32 x) {
      return {x,x,x,x};
 }
 
-v4 V4(f32 x, f32 y, f32 z, f32 w) {
+v4 mk4(f32 x, f32 y, f32 z, f32 w) {
      return {x,y,z,w};
 }
 
-v4 V4(v2 xy, v2 zw) {
+v4 mk4(v2 xy, v2 zw) {
      return {xy.x,xy.y,zw.x,zw.y};
 }
 
-v4 V4(f32 x, v2 yz, f32 w) {
+v4 mk4(f32 x, v2 yz, f32 w) {
      return {x,yz.x,yz.y,w};
 }
 
-v4 V4(v3 xyz, f32 w) {
+v4 mk4(v3 xyz, f32 w) {
      return {xyz.x, xyz.y, xyz.z, w};
 }
 
-v4 V4(f32 x, v3 yzw) {
+v4 mk4(f32 x, v3 yzw) {
      return {x, yzw.x, yzw.y, yzw.z};
 }
 
@@ -1355,35 +1363,35 @@ v4 operator/(v4 a, v4 b) {
 }
 
 v4 operator+(v4 a, f32 b) {
-     return a + V4(b);
+     return a + mk4(b);
 }
 
 v4 operator-(v4 a, f32 b) {
-     return a - V4(b);
+     return a - mk4(b);
 }
 
 v4 operator*(v4 a, f32 b) {
-     return a * V4(b);
+     return a * mk4(b);
 }
 
 v4 operator/(v4 a, f32 b) {
-     return a / V4(b);
+     return a / mk4(b);
 }
 
 v4 operator+(f32 a, v4 b) {
-     return V4(a) + b;
+     return mk4(a) + b;
 }
 
 v4 operator-(f32 a, v4 b) {
-     return V4(a) - b;
+     return mk4(a) - b;
 }
 
 v4 operator*(f32 a, v4 b) {
-     return V4(a) * b;
+     return mk4(a) * b;
 }
 
 v4 operator/(f32 a, v4 b) {
-     return V4(a) / b;
+     return mk4(a) / b;
 }
 
 v4 operator+=(v4& a, v4 b) {
@@ -1442,7 +1450,6 @@ v4 operator-(v4 a) {
      return {-a.x, -a.y, -a.z, -a.w};
 }
 
-
 f32 inner(v4 a, v4 b) {
      return a.x*b.x + a.y*b.y + a.z*b.z + a.w*b.w;
 }
@@ -1485,7 +1492,7 @@ v4 lerp(v4 a, v4 b, v4 t) {
 }
 
 v4 lerp(v4 a, v4 b, f32 t) {
-     return lerp(a, b, V4(t));
+     return lerp(a, b, mk4(t));
 }
 
 v4 unilateral_to_bilateral(v4 x) {
@@ -1514,4 +1521,227 @@ v4 nearby(v4 x) {
 
 v4 round(v4 x) {
      return {round(x.x), round(x.y), round(x.z), round(x.w)};
+}
+
+v4 transpose(v4 x) {
+     return {x.w, x.z, x.y, x.x};
+}
+
+r2 mk_r2(void) {
+     return {};
+}
+
+r2 mk_r2(v2 a, v2 b) {
+     return {a,b};
+}
+
+r2 mk_r2_center_dim(v2 a, v2 b) {
+     v2 hd = b*0.5f;
+     return{a-hd,a+hd};
+}
+
+r2 mk_r2_center_hdim(v2 a, v2 b) {
+     return mk_r2_center_dim(a, b*2.0f);
+}
+
+r2 mk_r2_min_dim(v2 a, v2 b) {
+     return {a, a+b};
+}
+
+r2 mk_r2_min_hdim(v2 a, v2 b) {
+     return mk_r2_min_dim(a, b*2.0f);
+}
+
+r2 mk_r2_max_dim(v2 a, v2 b) {
+     return{a-b,a};
+}
+
+r2 mk_r2_max_hdim(v2 a, v2 b) {
+     return mk_r2_max_dim(a, b*2.0f);
+}
+
+r2 mk_r2_top_left_dim(v2 a, v2 b) {
+     return {a - mk_v2(0.0f, b.y), a + mk_v2(b.x, 0.0f)};
+}
+
+r2 mk_r2_top_left_hdim(v2 a, v2 b) {
+     return mk_r2_top_left_dim(a, b*2.0f);
+}
+
+r2 mk_r2_bottom_right_dim(v2 a, v2 b) {
+     return {a - mk_v2(b.x, 0.0f), a + mk_v2(0.0f, b.y)};
+}
+
+r2 mk_r2_bottom_right_hdim(v2 a, v2 b) {
+     return mk_r2_bottom_right_dim(a, b*2.0f);
+}
+
+r2 minkowski_sum(r2 x) {
+     v2 hd = hdim(x);
+     return mk_r2(x.a - hd, x.b + hd);
+}
+
+r2 rotate_by_90degs(r2 x) {
+     v2 hd = hdim(x);
+     v2 p0 = rotate(mk_v2(-hd.x, -hd.y), PI32*0.5f);
+     v2 p1 = rotate(mk_v2(-hd.x, hd.y), PI32*0.5f);
+     v2 p2 = rotate(mk_v2(hd.x, hd.y), PI32*0.5f);
+     v2 p3 = rotate(mk_v2(hd.x, - hd.y), PI32*0.5f);
+     f32 min_x = min(p0.x, min(p1.x, min(p2.x, p3.x)));
+     f32 min_y = min(p0.y, min(p1.y, min(p2.y, p3.y)));
+     f32 max_x = max(p0.x, max(p1.x, max(p2.x, p3.x)));
+     f32 max_y = max(p0.y, max(p1.y, max(p2.y, p3.y)));
+     return mk_r2(mk_v2(min_x, min_y), mk_v2(max_x, max_y));
+}
+
+v2 center(r2 x) {
+     return x.a + (dim(x) * 0.5f);
+}
+
+v2 dim(r2 x) {
+     return x.b - x.a;
+}
+
+v2 hdim(r2 x) {
+     return dim(x)*0.5f;
+}
+
+v2 top_left(r2 x) {
+     return x.a + mk_v2(0.0f, dim(x).y);
+}
+
+v2 bottom_right(r2 x) {
+     return x.a + mk_v2(dim(x).x, 0.0f);
+}
+
+b8x intersection(r2 a, r2 b) {
+     return (a.a.x <= b.b.x && a.b.x >= b.a.x) && (a.a.y <= b.b.y && a.b.y >= b.a.y);
+}
+
+b8x intersection(r2 a, v2 b) {
+     return b >= a.a && b <= a.b;
+}
+
+b8x intersection(v2 a, r2 b) {
+     return intersection(b, a);
+}
+
+f32 distance(r2 a, r2 b) {
+     return distance(center(a), center(b));
+}
+
+f32 distance(v2 a, r2 b) {
+     return distance(a, center(b));
+}
+
+f32 distance(r2 a, v2 b) {
+     return distance(center(a), b);
+}
+
+v2 closest_point(r2 a, v2 to) {
+     return clamp2(to, a.a, a.b);
+}
+
+r2 operator+(r2 a, r2 b) {
+     return {a.a+b.a, a.b+b.b};
+}
+
+r2 operator-(r2 a, r2 b) {
+     return {a.a-b.a, a.b-b.b};
+}
+
+r2 operator*(r2 a, r2 b) {
+     return {a.a*b.a, a.b*b.b};
+}
+
+r2 operator/(r2 a, r2 b) {
+     return {a.a/b.a, a.b/b.b};
+}
+
+r2 operator+(r2 a, f32 b) {
+     return {a.a+b, a.b+b};
+}
+
+r2 operator-(r2 a, f32 b) {
+     return {a.a-b, a.b-b};
+}
+
+r2 operator*(r2 a, f32 b) {
+     return {a.a*b, a.b*b};
+}
+
+r2 operator/(r2 a, f32 b) {
+     return {a.a/b, a.b/b};
+}
+
+r2 operator+(f32 a, r2 b) {
+     return {a+b.a, a+b.b};
+}
+
+r2 operator-(f32 a, r2 b) {
+     return {a-b.a, a-b.b};
+}
+
+r2 operator*(f32 a, r2 b) {
+     return {a*b.a, a*b.b};
+}
+
+r2 operator/(f32 a, r2 b) {
+     return {a/b.a, a/b.b};
+}
+
+r2 operator+=(r2& a, r2 b) {
+     return a = a + b;
+}
+
+r2 operator-=(r2& a, r2 b) {
+     return a = a - b;
+}
+
+r2 operator*=(r2& a, r2 b) {
+     return a = a * b;
+}
+
+r2 operator/=(r2& a, r2 b) {
+     return a = a / b;
+}
+
+r2 operator+=(r2& a, f32 b) {
+     return a = a + b;
+}
+
+r2 operator-=(r2& a, f32 b) {
+     return a = a - b;
+}
+
+r2 operator*=(r2& a, f32 b) {
+     return a = a * b;
+}
+
+r2 operator/=(r2& a, f32 b) {
+     return a = a / b;
+}
+
+b8x operator>(r2 a, r2 b) {
+     return (a.a>b.a)&& (a.b>b.b);
+}
+
+b8x operator<(r2 a, r2 b) {
+     return (a.a<b.a)&& (a.b<b.b);
+}
+
+b8x operator>=(r2 a, r2 b) {
+     return (a.a>=b.a)&& (a.b>=b.b);
+}
+
+b8x operator<=(r2 a, r2 b) {
+     return (a.a<=b.a)&& (a.b<=b.b);
+}
+
+r2 operator+(r2 a) {
+     return {+a.a, +a.b};
+}
+
+r2 operator-(r2 a) {
+     return {-a.a, -a.b};
 }
