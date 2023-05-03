@@ -10,8 +10,8 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#if !defined(BX)
-#define BX
+#if !defined(BASIC)
+#define BASIC
 
 // *********
 // *********
@@ -350,10 +350,15 @@ u64 f64_to_u64(f64 x);
 f32 f32_from_u32(u32 x);
 f64 f64_from_u64(u64 x);
 
-// Safe integer conversions.
+// Safe (signed) integer conversions.
+u8  safe_s16_to_s8(s16 x);
+u16 safe_s32_to_s16(s32 x);
+u32 safe_s64_to_s32(s64 x);
+
+// Safe (unsigned) integer conversions.
 u8  safe_u16_to_u8(u16 x);
 u16 safe_u32_to_u16(u32 x);
-u32 safe_u64_to_u64(u64 x);
+u32 safe_u64_to_u32(u64 x);
 
 // *********
 // *********
@@ -404,8 +409,8 @@ void decompress_rle(void* dst, void* src, sz size, sz decompressed_size);
 // *********
 
 struct sort_entry {
-     u32 key;
-     u32 value;
+      u32 key;
+      u32 value;
 };
 
 // Sort algorithms.
@@ -418,8 +423,8 @@ void sort_radix(sort_entry* entries, u32 count);
 // *********
 
 struct rng {
-     u32 seed;
-     u32 state;
+      u32 seed;
+      u32 state;
 };
 
 // Random Number Generation.
@@ -540,6 +545,11 @@ f32 so0(f32 x); // Sign or 0.
 f32 distance(f32 x, f32 y);
 f32 square(f32 x);
 f32 cube(f32 x);
+f32 acos(f32 x);
+f32 asin(f32 x);
+f32 atan(f32 x);
+f32 atan2(f32 x, f32 y);
+f32 copysign(f32 x, f32 y);
 b8x bias_compare(f32 x, f32 y, f32 bias = EPSILON32);
 b8x bias_in_range(f32 x, f32 minimum, f32 maximum, f32 bias = EPSILON32);
 f32 bilateral_to_unilateral(f32 bilateral);
@@ -554,10 +564,10 @@ f32 round_to_multiple(f32 x, f32 multiple);
 
 // 2D vector.
 struct v2 {
-     union {
-          f32 e[2];
-          struct { f32 x, y; }; 
-     };
+      union {
+            f32 e[2];
+            struct { f32 x, y; }; 
+      };
 };
 
 // 2D vector constructors.
@@ -621,12 +631,12 @@ v2 transpose(v2 x);
 
 // 3D vector.
 struct v3 {
-     union {
-          f32 e[3];
-          struct { f32 x, y, z; }; 
-          struct { v2 xy; f32 _z; };
-          struct { f32 _x; v2 yz; };
-     };
+      union {
+            f32 e[3];
+            struct { f32 x, y, z; }; 
+            struct { v2 xy; f32 _z; };
+            struct { f32 _x; v2 yz; };
+      };
 };
 
 // 3D vector constructors.
@@ -691,14 +701,14 @@ v3 transpose(v3 x);
 
 // 4D vector.
 struct v4 {
-     union {
-          f32 e[4];
-          struct { f32 x, y, z, w; }; 
-          struct { v2 xy; v2 zw; };
-          struct { f32 _x; v2 yz; f32 _w; };
-          struct { v3 xyz; f32 __w; };
-          struct { f32 __x; v3 yzw; };
-     };
+      union {
+            f32 e[4];
+            struct { f32 x, y, z, w; }; 
+            struct { v2 xy; v2 zw; };
+            struct { f32 _x; v2 yz; f32 _w; };
+            struct { v3 xyz; f32 __w; };
+            struct { f32 __x; v3 yzw; };
+      };
 };
 
 // 4D vector constructors.
@@ -764,8 +774,8 @@ v4 transpose(v4 x);
 
 // Range2.
 struct r2 {
-     v2 a;
-     v2 b;
+      v2 a;
+      v2 b;
 };
 
 // Range2 constructors.
@@ -825,5 +835,26 @@ f32 distance(r2 a, r2 b);
 f32 distance(v2 a, r2 b);
 f32 distance(r2 a, v2 b);
 v2 closest_point(r2 a, v2 to);
+
+// *********
+// *********
+
+// Quaternion.
+typedef v4 quat;
+
+// Quaternion constructors.
+quat mk_quat(f32 x, f32 y, f32 z, f32 w);
+quat mk_quat(v4 v);
+quat mk_quat_identity(void);
+quat mk_quat_angle_axis(f32 angle, v3 axis);
+quat mk_quat_euler_xyz(v3 angles);
+
+// Quaternion operations.
+v4 to_v4(quat q);
+quat join(quat a, quat b);
+v3   rotate(v3 a, quat b);
+quat inverse(quat q);
+v3   to_euler_xyz(quat q);
+quat slerp(quat a, quat b, f32 t);
 
 #endif
